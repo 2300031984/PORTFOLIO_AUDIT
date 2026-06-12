@@ -1,0 +1,31 @@
+{
+  "name": "memory-map",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "15.1.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "@xyflow/react": "^12.3.0",
+    "framer-motion": "^11.13.1",
+    "lucide-react": "^0.468.0",
+    "canvas-confetti": "^1.9.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^20.17.9",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "@types/canvas-confetti": "^1.6.4",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "15.1.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2"
+  }
+}

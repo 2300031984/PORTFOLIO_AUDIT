@@ -1,0 +1,299 @@
+@import "tailwindcss";
+
+:root {
+  --color-paper: #FAF8F2;
+  --color-paper-node: #F2EFE6;
+  --color-ink: #0C0C0B;
+  --color-ink-muted: #48453D;
+  --color-accent: #B94A24;
+  --color-accent-hover: #9E381A;
+  --color-border-ink: rgba(12, 12, 11, 0.22);
+  --color-edge: rgba(12, 12, 11, 0.18);
+  --color-accent-glow: rgba(185, 74, 36, 0.15);
+  
+  --font-serif: var(--font-serif, Playfair Display, serif);
+  --font-sans: var(--font-sans, Plus Jakarta Sans, sans-serif);
+}
+
+.dark {
+  --color-paper: #121211;
+  --color-paper-node: #1D1D1B;
+  --color-ink: #FFFFFF;
+  --color-ink-muted: #D8D5CC;
+  --color-accent: #E26E4A;
+  --color-accent-hover: #F28C68;
+  --color-border-ink: rgba(255, 255, 255, 0.22);
+  --color-edge: rgba(255, 255, 255, 0.15);
+  --color-accent-glow: rgba(226, 110, 74, 0.22);
+}
+
+@theme {
+  --color-paper: var(--color-paper);
+  --color-paper-node: var(--color-paper-node);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-border-ink: var(--color-border-ink);
+  --color-edge: var(--color-edge);
+  --color-accent-glow: var(--color-accent-glow);
+  
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  overflow-x: hidden;
+  position: relative;
+  transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Watercolor background stains */
+.watercolor-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.25;
+  filter: blur(100px);
+  background: 
+    radial-gradient(circle at 25% 25%, #EBF3F0 0%, transparent 45%),
+    radial-gradient(circle at 75% 25%, #EDF2FC 0%, transparent 45%),
+    radial-gradient(circle at 50% 75%, #FCF5E5 0%, transparent 45%),
+    radial-gradient(circle at 15% 75%, #FDF0EB 0%, transparent 45%);
+}
+
+.dark .watercolor-bg {
+  opacity: 0.14;
+  background: 
+    radial-gradient(circle at 25% 25%, #11221B 0%, transparent 45%),
+    radial-gradient(circle at 75% 25%, #101827 0%, transparent 45%),
+    radial-gradient(circle at 50% 75%, #20170A 0%, transparent 45%),
+    radial-gradient(circle at 15% 75%, #24110B 0%, transparent 45%);
+}
+
+/* Paper noise texture using dynamic SVG */
+.paper-texture::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.dark .paper-texture::after {
+  opacity: 0.025;
+}
+
+/* React Flow customizations */
+.react-flow__renderer {
+  background-color: transparent !important;
+}
+
+.react-flow__pane {
+  cursor: grab;
+}
+
+.react-flow__pane:active {
+  cursor: grabbing;
+}
+
+/* Thicker edge lines for visual clarity */
+.react-flow__edge-path {
+  stroke: var(--color-edge);
+  stroke-width: 2.2;
+  stroke-dasharray: 3 1.5;
+  transition: stroke 0.5s ease, stroke-width 0.5s ease;
+}
+
+.react-flow__edge.active .react-flow__edge-path {
+  stroke: var(--color-accent);
+  stroke-width: 4;
+  stroke-dasharray: 0;
+  filter: drop-shadow(0 0 4px var(--color-accent));
+}
+
+.react-flow__edge.highlighted .react-flow__edge-path {
+  stroke: var(--color-accent);
+  stroke-width: 3;
+  stroke-dasharray: 4 1.5;
+}
+
+.react-flow__edge.dimmed .react-flow__edge-path {
+  opacity: 0.15;
+}
+
+.react-flow__handle {
+  width: 6px !important;
+  height: 6px !important;
+  background: var(--color-ink) !important;
+  border: none !important;
+  opacity: 0.7;
+}
+
+/* Colorized Node Themes - Enhanced Contrast & Bold Sizing */
+
+/* Project Node */
+.node-theme-project {
+  background-color: #EBF3F0 !important;
+  border-color: #92B5A7 !important;
+  color: #0F2A1A !important;
+  font-weight: 600;
+}
+.dark .node-theme-project {
+  background-color: #0E1D17 !important;
+  border-color: #244B3C !important;
+  color: #A9C5BA !important;
+}
+.node-theme-project h3 {
+  color: #0F2A1A !important;
+  font-weight: 700;
+}
+.dark .node-theme-project h3 { color: #FFFFFF !important; }
+.node-theme-project p { color: #2D4436 !important; font-weight: 500; }
+.dark .node-theme-project p { color: #8BA89C !important; }
+
+/* Career Node */
+.node-theme-career {
+  background-color: #FCF5E5 !important;
+  border-color: #DFB665 !important;
+  color: #3B270A !important;
+  font-weight: 600;
+}
+.dark .node-theme-career {
+  background-color: #1A1207 !important;
+  border-color: #493518 !important;
+  color: #E5C583 !important;
+}
+.node-theme-career h3 {
+  color: #3B270A !important;
+  font-weight: 700;
+}
+.dark .node-theme-career h3 { color: #FFFFFF !important; }
+.node-theme-career p { color: #624B25 !important; font-weight: 500; }
+.dark .node-theme-career p { color: #C2A87E !important; }
+
+/* Skill Node */
+.node-theme-skill {
+  background-color: #EDF2FC !important;
+  border-color: #9ABBF7 !important;
+  color: #121F3A !important;
+  font-weight: 600;
+}
+.dark .node-theme-skill {
+  background-color: #0E1421 !important;
+  border-color: #223758 !important;
+  color: #ACC5F3 !important;
+}
+.node-theme-skill h3 {
+  color: #121F3A !important;
+  font-weight: 700;
+}
+.dark .node-theme-skill h3 { color: #FFFFFF !important; }
+
+/* Experiment Node */
+.node-theme-experiment {
+  background-color: #FDF0EB !important;
+  border-color: #F0A082 !important;
+  color: #501D0F !important;
+  font-weight: 600;
+}
+.dark .node-theme-experiment {
+  background-color: #200E08 !important;
+  border-color: #4C2216 !important;
+  color: #F4B59D !important;
+}
+.node-theme-experiment h3 {
+  color: #501D0F !important;
+  font-weight: 700;
+}
+.dark .node-theme-experiment h3 { color: #FFFFFF !important; }
+
+/* Github Node */
+.node-theme-github {
+  background-color: #F5EFFB !important;
+  border-color: #C1A5E7 !important;
+  color: #2F174D !important;
+  font-weight: 600;
+}
+.dark .node-theme-github {
+  background-color: #140A1F !important;
+  border-color: #361F51 !important;
+  color: #CFB9ED !important;
+}
+.node-theme-github h3 {
+  color: #2F174D !important;
+  font-weight: 700;
+}
+.dark .node-theme-github h3 { color: #FFFFFF !important; }
+
+
+/* Animations */
+@keyframes soft-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--color-accent), 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(var(--color-accent), 0);
+  }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 3s infinite ease-in-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px 1px var(--color-accent-glow);
+    border-color: var(--color-border-ink);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px var(--color-accent-glow);
+    border-color: var(--color-accent);
+  }
+}
+
+@keyframes text-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-text-fade {
+  animation: text-fade 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Typographic details */
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+  font-weight: 700;
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* Hide flow attribution minimally for cleaner portfolio view */
+.react-flow__attribution {
+  display: none !important;
+}
