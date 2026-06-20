@@ -47,6 +47,7 @@ export default function CognitiveScan({
       action: () => {
         onExpandProject("secure-ride-sharing", false);
         onExpandProject("malware-analysis-lab", false);
+        onExpandProject("ride-sharing-pentest", false);
       }
     },
     {
@@ -61,7 +62,7 @@ export default function CognitiveScan({
     },
     {
       title: "Decrypting System Blueprints",
-      log: ">>> 4 COMPLETED CASE STUDIES DETECTED. AUTO-DECRYPTING ARCHITECTURE Blueprints FOR 'MALWARE ANALYSIS PROJECT'...",
+      log: ">>> 5 COMPLETED CASE STUDIES DETECTED. AUTO-DECRYPTING ARCHITECTURE Blueprints FOR 'MALWARE ANALYSIS PROJECT'...",
       targetId: "projects-section",
       action: () => {
         onExpandProject("malware-analysis-lab", true);

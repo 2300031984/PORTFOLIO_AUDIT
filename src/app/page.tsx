@@ -36,7 +36,8 @@ import {
   Activity,
   User,
   Mail,
-  CheckCircle
+  CheckCircle,
+  FileText
 } from "lucide-react";
 
 // Register custom nodes
@@ -144,10 +145,11 @@ function MemoryMapEmbed({
 
       let px = 0;
       let py = 0;
-      if (idx === 0) { px = -480; py = -220; }
-      else if (idx === 1) { px = -160; py = -320; }
-      else if (idx === 2) { px = 160; py = -320; }
-      else if (idx === 3) { px = 480; py = -220; }
+      if (idx === 0) { px = -500; py = -180; }
+      else if (idx === 1) { px = -250; py = -280; }
+      else if (idx === 2) { px = 0; py = -340; }
+      else if (idx === 3) { px = 250; py = -280; }
+      else if (idx === 4) { px = 500; py = -180; }
 
       listNodes.push({
         id: `proj-${proj.id}`,
@@ -192,6 +194,9 @@ function MemoryMapEmbed({
             jx = px - 120 - jIdx * 250;
             jy = py - 150 - jIdx * 50;
           } else if (idx === 2) {
+            jx = px + (jIdx % 2 === 0 ? -50 : 50);
+            jy = py - 180 - jIdx * 200;
+          } else if (idx === 3) {
             jx = px + 120 + jIdx * 250;
             jy = py - 150 - jIdx * 50;
           } else {
@@ -769,15 +774,28 @@ export default function Page() {
                           </div>
 
                           <div className="flex items-center gap-3 pt-2">
-                            <a
-                              href={proj.githubUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="flex items-center gap-1.5 px-4 py-2 border border-ink bg-ink text-paper hover:bg-accent rounded-lg text-[10px] font-mono cursor-pointer transition-colors shadow-sm"
-                            >
-                              <Github className="w-3.5 h-3.5" />
-                              Decrypt Code Base
-                            </a>
+                            {proj.githubUrl && (
+                              <a
+                                href={proj.githubUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-1.5 px-4 py-2 border border-ink bg-ink text-paper hover:bg-accent rounded-lg text-[10px] font-mono cursor-pointer transition-colors shadow-sm"
+                              >
+                                <Github className="w-3.5 h-3.5" />
+                                Decrypt Code Base
+                              </a>
+                            )}
+                            {proj.reportUrl && (
+                              <a
+                                href={proj.reportUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-1.5 px-4 py-2 border border-accent bg-accent text-paper hover:bg-ink rounded-lg text-[10px] font-mono cursor-pointer transition-colors shadow-sm animate-pulse-glow"
+                              >
+                                <FileText className="w-3.5 h-3.5" />
+                                View Pentest Report
+                              </a>
+                            )}
                             <button
                               onClick={() => {
                                 setExpandedProjects((prev) => ({ ...prev, [proj.id]: !prev[proj.id] }));

@@ -13,7 +13,8 @@ export interface Project {
   tagline: string;
   skills: string[];
   techStack: string[];
-  githubUrl: string;
+  githubUrl?: string;
+  reportUrl?: string;
   features: string[];
   journey: ProjectJourney;
 }
@@ -246,6 +247,28 @@ export const portfolioConfig: PortfolioConfig = {
         solution: "Formulated specific socket query profiles and parsed data streams sequentially.",
         impact: "Successfully mapped and documented threat payloads and brute-force events."
       }
+    },
+    {
+      id: "ride-sharing-pentest",
+      title: "RideSharing Pentest",
+      tagline: "Manual security assessment & OWASP WSTG audits",
+      skills: ["security-constellation", "backend-constellation"],
+      techStack: ["Burp Suite", "OWASP WSTG", "JWT Security", "API Security", "Penetration Testing"],
+      reportUrl: "Penetration_Test_Report.pdf",
+      features: [
+        "Conducted a comprehensive manual penetration testing assessment of a self-developed Ride-Sharing Web Application using Burp Suite Community Edition.",
+        "Audited 48 manual security test cases covering Authentication, Authorization, JWT Security, and IDOR.",
+        "Identified Broken Access Control (IDOR), Mass Assignment, Client-Side Fare Manipulation, and Missing Rate Limiting.",
+        "Prepared a professional report mapping vulnerabilities, severities, evidence, remediation, and OWASP mappings."
+      ],
+      journey: {
+        question: "How secure is our Ride-Sharing application against critical business logic and OWASP vulnerabilities?",
+        learning: "OWASP Web Security Testing Guide (WSTG), manual penetration testing tools, and severe access control flaws.",
+        experiment: "Designed 48 manual security test cases using Burp Suite to audit the authentication and API endpoints.",
+        challenge: "Detecting client-side validation bypasses and IDOR parameters in dynamic JWT session states.",
+        solution: "Configured target scopes in Burp Suite, intercepted session tokens, and verified unauthorized modifications.",
+        impact: "Compiled a professional penetration testing report mapping identified vulnerabilities to remediation guides."
+      }
     }
   ],
   skills: [
@@ -253,13 +276,13 @@ export const portfolioConfig: PortfolioConfig = {
       id: "backend-constellation",
       title: "Backend Engineering",
       items: ["Java", "Spring Boot", "REST APIs", "JWT", "Spring Security", "MySQL", "PostgreSQL"],
-      relatedProjects: ["secure-ride-sharing"]
+      relatedProjects: ["secure-ride-sharing", "ride-sharing-pentest"]
     },
     {
       id: "security-constellation",
       title: "Cybersecurity",
       items: ["Threat Hunting", "OWASP Top 10", "Incident Response", "Vulnerability Assessment", "Malware Analysis", "Digital Forensics"],
-      relatedProjects: ["malware-analysis-lab", "deepfake-detection"]
+      relatedProjects: ["malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest"]
     },
     {
       id: "cloud-constellation",
@@ -271,13 +294,13 @@ export const portfolioConfig: PortfolioConfig = {
       id: "programming-constellation",
       title: "Programming",
       items: ["Java", "Python", "C", "SQL", "Bash scripting"],
-      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection"]
+      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest"]
     },
     {
       id: "core-cs-constellation",
       title: "Core Computer Science",
       items: ["Data Structures & Algorithms", "DBMS", "Operating Systems", "Computer Networks", "System Design"],
-      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis"]
+      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis", "ride-sharing-pentest"]
     }
   ],
   experiments: [
