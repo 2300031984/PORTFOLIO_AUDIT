@@ -381,9 +381,9 @@ export const portfolioConfig: PortfolioConfig = {
     }
   ],
   githubStats: {
-    commits: "96 contributions in the last year",
-    repos: "11",
-    primaryTech: "Java / Python / JS",
-    contributions: "96 Contributions"
+    commits: "87 contributions in the last year",
+    repos: "14",
+    primaryTech: "Java / Python / JS / TS",
+    contributions: "87 Contributions"
   }
 };
