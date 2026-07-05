@@ -127,6 +127,16 @@ export const portfolioConfig: PortfolioConfig = {
         name: "Oracle AI Foundations Associate",
         issuer: "Oracle Corporation",
         link: "https://education.oracle.com/verification"
+      },
+      {
+        name: "Microsoft Certified: Security Operations Analyst Associate",
+        issuer: "Microsoft",
+        link: "Microsoft_Certified_Security_Operations_Analyst_Associate.pdf"
+      },
+      {
+        name: "Smart Coder Certification (Silver)",
+        issuer: "Smart Interviews",
+        link: "https://smartinterviews.in/certificate/2aca3234"
       }
     ],
     securityTraining: "100+ TryHackMe Labs Completed",
@@ -281,7 +291,7 @@ export const portfolioConfig: PortfolioConfig = {
     {
       id: "security-constellation",
       title: "Cybersecurity",
-      items: ["Threat Hunting", "OWASP Top 10", "Incident Response", "Vulnerability Assessment", "Malware Analysis", "Digital Forensics"],
+      items: ["Threat Hunting", "Incident Response", "Security Operations (SIEM/SOAR)", "Microsoft Sentinel", "OWASP Top 10", "Vulnerability Assessment", "Malware Analysis", "Digital Forensics"],
       relatedProjects: ["malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest"]
     },
     {
@@ -293,7 +303,7 @@ export const portfolioConfig: PortfolioConfig = {
     {
       id: "programming-constellation",
       title: "Programming",
-      items: ["Java", "Python", "C", "SQL", "Bash scripting"],
+      items: ["Java", "Python", "C", "SQL", "Bash scripting", "Competitive Programming"],
       relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest"]
     },
     {

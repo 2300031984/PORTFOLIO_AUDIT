@@ -70,7 +70,7 @@ export default function GuidedTour({ onStartTour, onEndTour, onExpandProject }: 
     },
     {
       title: "Telemetry & Credentials Verification",
-      narrative: "Scan complete. Verified certifications: AWS Certified Cloud Practitioner, Oracle AI Foundations. Security training: 100+ TryHackMe Labs. Connection links open.",
+      narrative: "Scan complete. Verified certifications: AWS Certified Cloud Practitioner, Oracle AI Foundations, Microsoft Security Operations Analyst Associate, Smart Coder (Smart Interviews). Security training: 100+ TryHackMe Labs. Connection links open.",
       viewport: { x: 450, y: 0, zoom: 0.9 }
     }
   ];
