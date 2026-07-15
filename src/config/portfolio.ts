@@ -279,6 +279,29 @@ export const portfolioConfig: PortfolioConfig = {
         solution: "Configured target scopes in Burp Suite, intercepted session tokens, and verified unauthorized modifications.",
         impact: "Compiled a professional penetration testing report mapping identified vulnerabilities to remediation guides."
       }
+    },
+    {
+      id: "soc-automation-platform",
+      title: "AI Cybersecurity Threat Intelligence & SOC Automation Platform",
+      tagline: "Enterprise-grade AI-powered Security Operations Center (SOC) automation platform combining threat intelligence, SOAR workflows, vulnerability management, and LLM-driven incident response playbooks.",
+      skills: ["backend-constellation", "security-constellation", "cloud-constellation", "programming-constellation", "core-cs-constellation"],
+      techStack: ["FastAPI", "SQLAlchemy", "PostgreSQL", "n8n SOAR", "LangChain", "Google Gemini", "Docker", "JWT RBAC"],
+      githubUrl: "https://github.com/2300031984/AI-Cybersecurity-SOC-Automation-Platform",
+      features: [
+        "Multi-Tenant Isolation: Implemented strict row-level segregation using SQLAlchemy query filters to isolate organization-specific vulnerability data.",
+        "SOAR Automation & Ingestion: Orchestrated automated threat syncing and alert webhooks utilizing n8n pipelines.",
+        "AI Incident Response: Compiled instant containment playbooks, Snort firewall rules, and Splunk SPL queries using Google Gemini.",
+        "AI Security Copilot: Built a conversational security assistant (LangChain RAG) translating natural language to safe parameterized SQL SELECT queries.",
+        "Threat Feed Integration: Aggregated telemetry feeds (NVD CVE API, CISA KEV, EPSS likelihood index, VirusTotal, AbuseIPDB)."
+      ],
+      journey: {
+        question: "How can we orchestrate and automate live threat intelligence ingestion, risk prioritization, and incident response playbooks within a single multi-tenant enterprise system?",
+        learning: "Deepened expertise in row-level database segregation, SOAR workflow design, automated API integration (NVD/EPSS/CISA KEV), and RAG networks translating natural language to secure SQL queries.",
+        experiment: "Synthesized live vulnerability telemetry indices and automated alerting pipelines using FastAPI, PostgreSQL, and n8n orchestration.",
+        challenge: "Compiling database queries dynamically via the AI Security Copilot without exposing the system to SQL injection or cross-tenant data leaks.",
+        solution: "Implemented parameterized SQLAlchemy query builders combined with role-based access control (RBAC) validations and strict tenant-specific session filters.",
+        impact: "Streamlined SOC analyst investigation workflows by reducing incident response compilation latency and isolating threat metrics securely for separate organizations."
+      }
     }
   ],
   skills: [
@@ -286,31 +309,31 @@ export const portfolioConfig: PortfolioConfig = {
       id: "backend-constellation",
       title: "Backend Engineering",
       items: ["Java", "Spring Boot", "REST APIs", "JWT", "Spring Security", "MySQL", "PostgreSQL"],
-      relatedProjects: ["secure-ride-sharing", "ride-sharing-pentest"]
+      relatedProjects: ["secure-ride-sharing", "ride-sharing-pentest", "soc-automation-platform"]
     },
     {
       id: "security-constellation",
       title: "Cybersecurity",
       items: ["Threat Hunting", "Incident Response", "Security Operations (SIEM/SOAR)", "Microsoft Sentinel", "OWASP Top 10", "Vulnerability Assessment", "Malware Analysis", "Digital Forensics"],
-      relatedProjects: ["malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest"]
+      relatedProjects: ["malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform"]
     },
     {
       id: "cloud-constellation",
       title: "Cloud & DevOps",
       items: ["AWS", "Docker", "Linux", "Git", "Deployment Automation", "Infrastructure Fundamentals"],
-      relatedProjects: ["secure-ride-sharing", "network-traffic-analysis"]
+      relatedProjects: ["secure-ride-sharing", "network-traffic-analysis", "soc-automation-platform"]
     },
     {
       id: "programming-constellation",
       title: "Programming",
       items: ["Java", "Python", "C", "SQL", "Bash scripting", "Competitive Programming"],
-      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest"]
+      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform"]
     },
     {
       id: "core-cs-constellation",
       title: "Core Computer Science",
       items: ["Data Structures & Algorithms", "DBMS", "Operating Systems", "Computer Networks", "System Design"],
-      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis", "ride-sharing-pentest"]
+      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis", "ride-sharing-pentest", "soc-automation-platform"]
     }
   ],
   experiments: [

@@ -47,7 +47,10 @@ export default function CognitiveScan({
       action: () => {
         onExpandProject("secure-ride-sharing", false);
         onExpandProject("malware-analysis-lab", false);
+        onExpandProject("deepfake-detection", false);
+        onExpandProject("network-traffic-analysis", false);
         onExpandProject("ride-sharing-pentest", false);
+        onExpandProject("soc-automation-platform", false);
       }
     },
     {

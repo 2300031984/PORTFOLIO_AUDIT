@@ -145,11 +145,12 @@ function MemoryMapEmbed({
 
       let px = 0;
       let py = 0;
-      if (idx === 0) { px = -500; py = -180; }
-      else if (idx === 1) { px = -250; py = -280; }
-      else if (idx === 2) { px = 0; py = -340; }
-      else if (idx === 3) { px = 250; py = -280; }
-      else if (idx === 4) { px = 500; py = -180; }
+      if (idx === 0) { px = -600; py = -150; }
+      else if (idx === 1) { px = -360; py = -250; }
+      else if (idx === 2) { px = -120; py = -320; }
+      else if (idx === 3) { px = 120; py = -320; }
+      else if (idx === 4) { px = 360; py = -250; }
+      else if (idx === 5) { px = 600; py = -150; }
 
       listNodes.push({
         id: `proj-${proj.id}`,
@@ -194,9 +195,12 @@ function MemoryMapEmbed({
             jx = px - 120 - jIdx * 250;
             jy = py - 150 - jIdx * 50;
           } else if (idx === 2) {
-            jx = px + (jIdx % 2 === 0 ? -50 : 50);
-            jy = py - 180 - jIdx * 200;
+            jx = px - 50 - jIdx * 100;
+            jy = py - 180 - jIdx * 180;
           } else if (idx === 3) {
+            jx = px + 50 + jIdx * 100;
+            jy = py - 180 - jIdx * 180;
+          } else if (idx === 4) {
             jx = px + 120 + jIdx * 250;
             jy = py - 150 - jIdx * 50;
           } else {
