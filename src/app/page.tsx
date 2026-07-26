@@ -26,6 +26,7 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import GraphControls from "@/components/ui/GraphControls";
 import ParticleCanvas from "@/components/ui/ParticleCanvas";
 import CognitiveScan from "@/components/ui/CognitiveScan";
+import GuidedTour from "@/components/ui/GuidedTour";
 
 import {
   Github,
@@ -37,7 +38,11 @@ import {
   User,
   Mail,
   CheckCircle,
-  FileText
+  FileText,
+  Volume2,
+  VolumeX,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 // Register custom nodes
@@ -333,6 +338,13 @@ function MemoryMapEmbed({
       >
         <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="var(--color-edge)" />
       </ReactFlow>
+      <div className="absolute bottom-4 left-4 z-10 scale-90">
+        <GuidedTour
+          onStartTour={() => {}}
+          onEndTour={() => {}}
+          onExpandProject={handleToggleExpand}
+        />
+      </div>
       <div className="absolute bottom-4 right-4 z-10 scale-90">
         <GraphControls />
       </div>
@@ -350,6 +362,108 @@ export default function Page() {
   const [selectedProjectSpec, setSelectedProjectSpec] = useState<string | null>(null);
   const [emailCopied, setEmailCopied] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // HUD & Audio preferences
+  const [hudMode, setHudMode] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+
+  // Web Audio diagnostic tone oscillator helper
+  const playAudioTick = useCallback((freq = 600, duration = 0.06, type: OscillatorType = "sine") => {
+    if (!soundEnabled) return;
+    try {
+      const audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch (e) {
+      console.warn("Audio Context failed", e);
+    }
+  }, [soundEnabled]);
+
+  // Terminal CLI States & Handler
+  const [terminalHistory, setTerminalHistory] = useState<string[]>([
+    "Profile Dossier Console v1.0.0 initialized.",
+    "System status: ONLINE. Connection type: SECURE.",
+    "Type 'help' to audit system capabilities."
+  ]);
+  const [terminalInput, setTerminalInput] = useState("");
+
+  const handleTerminalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const input = terminalInput.trim().toLowerCase();
+    if (!input) return;
+
+    playAudioTick(800, 0.08, "square");
+    const updatedHistory = [...terminalHistory, `visitor@threatintel:~# ${terminalInput}`];
+
+    let response: string[] = [];
+    switch (input) {
+      case "help":
+        response = [
+          "Available Diagnostics & Audit Command list:",
+          "  help     - View this listing",
+          "  skills   - Audit Capability Constellations",
+          "  projects - Decrypt Case Studies and Blueprints",
+          "  stats    - Retrieve metric telemetry values",
+          "  contact  - Print diagnostic channel details (Email & LinkedIn)",
+          "  hud      - Shift interface to high-contrast HUD panel mode",
+          "  clear    - Clear console output logs"
+        ];
+        break;
+      case "skills":
+        response = [
+          "AUDITING CAPABILITIES CONSTELLATIONS:",
+          ...portfolioConfig.skills.map(s => `  • ${s.title}: ${s.items.join(", ")}`)
+        ];
+        break;
+      case "projects":
+        response = [
+          "DECRYPTING BLUEPRINTS:",
+          ...portfolioConfig.projects.map(p => `  • [${p.title}] - ${p.tagline}`)
+        ];
+        break;
+      case "stats":
+        response = [
+          "TELEMETRY LOGS:",
+          `  • DSA problems solved: ${portfolioConfig.developer.problemSolving}`,
+          `  • Security labs completed: ${portfolioConfig.developer.securityTraining}`,
+          `  • Total repositories: ${portfolioConfig.githubStats.repos}`,
+          `  • Active Contribution: ${portfolioConfig.githubStats.commits}`
+        ];
+        break;
+      case "contact":
+        response = [
+          "ESTABLISHING DIAGNOSTIC CHANNELS:",
+          `  • Direct Mail: ${portfolioConfig.developer.email}`,
+          `  • Linkedin Network: ${portfolioConfig.developer.linkedinUrl}`,
+          `  • Github Profile: ${portfolioConfig.developer.githubUrl}`
+        ];
+        break;
+      case "hud":
+        setHudMode(prev => !prev);
+        response = [`Shifting theme state. HUD Panel Mode: ${!hudMode ? "ENABLED" : "DISABLED"}`];
+        break;
+      case "clear":
+        setTerminalHistory([]);
+        setTerminalInput("");
+        return;
+      default:
+        response = [
+          `Command not recognized: '${input}'.`,
+          "Type 'help' to review directory permissions."
+        ];
+    }
+
+    setTerminalHistory([...updatedHistory, ...response]);
+    setTerminalInput("");
+  };
 
   // Form states
   const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
@@ -417,7 +531,12 @@ export default function Page() {
   }
 
   return (
-    <div className="relative min-h-screen bg-paper text-ink paper-texture font-sans selection:bg-accent/20">
+    <div className={`relative min-h-screen bg-paper text-ink paper-texture font-sans selection:bg-accent/20 transition-colors duration-500 ${hudMode ? "hud-mode bg-scanlines" : ""}`}>
+      {/* Radar sweep scanning line overlay when HUD active */}
+      {hudMode && (
+        <div className="pointer-events-none fixed inset-x-0 h-1 bg-accent/40 shadow-[0_0_15px_rgba(0,255,102,0.8)] z-50 animate-radar-sweep" />
+      )}
+      
       {/* Decorative watercolor stains */}
       <div className="watercolor-bg" />
 
@@ -442,7 +561,10 @@ export default function Page() {
           ].map((item) => (
             <button
               key={item.id}
-              onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => {
+                document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
+                playAudioTick(700, 0.04);
+              }}
               className="text-[10px] font-mono px-3 py-1.5 rounded-full text-ink-muted hover:text-ink hover:bg-paper/40 cursor-pointer transition-all duration-200"
             >
               {item.label}
@@ -451,8 +573,54 @@ export default function Page() {
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Sound preference Toggle */}
           <button
-            onClick={() => setCognitiveScanActive(true)}
+            onClick={() => {
+              setSoundEnabled(!soundEnabled);
+              // Play a quick chime trigger if sound is being enabled
+              if (!soundEnabled) {
+                setTimeout(() => {
+                  try {
+                    const audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+                    const osc = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    osc.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.08);
+                  } catch {
+                    // Ignore initialization failures
+                  }
+                }, 50);
+              }
+            }}
+            className={`p-2 rounded-full border bg-paper-node hover:bg-ink hover:text-paper cursor-pointer transition-colors shadow-sm ${soundEnabled ? "border-accent text-accent animate-pulse" : "border-border-ink text-ink-muted"}`}
+            title={soundEnabled ? "Mute diagnostics" : "Enable diagnostics"}
+          >
+            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
+
+          {/* HUD Mode Toggle */}
+          <button
+            onClick={() => {
+              setHudMode(!hudMode);
+              playAudioTick(1000, 0.12, "square");
+            }}
+            className={`p-2 rounded-full border bg-paper-node hover:bg-ink hover:text-paper cursor-pointer transition-colors shadow-sm ${hudMode ? "border-accent text-accent animate-pulse" : "border-border-ink text-ink-muted"}`}
+            title={hudMode ? "Return to default view" : "Enter diagnostic HUD view"}
+          >
+            {hudMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+
+          <button
+            onClick={() => {
+              setCognitiveScanActive(true);
+              playAudioTick(900, 0.1, "sine");
+            }}
             className="group flex items-center gap-2 px-5 py-2 rounded-full border border-ink bg-paper-node hover:bg-ink hover:text-paper text-ink font-serif italic text-xs tracking-wider shadow-sm hover:scale-102 hover:shadow-[0_0_12px_var(--color-accent-glow)] transition-all duration-300 cursor-pointer"
           >
             <Terminal className="w-3.5 h-3.5" />
@@ -526,6 +694,50 @@ export default function Page() {
             >
               Download Resume
             </a>
+          </motion.div>
+
+          {/* Cyber Terminal CLI Console */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 1.2 }}
+            className="w-full max-w-2xl mt-12 border border-border-ink bg-paper-node/80 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg text-left"
+          >
+            {/* Terminal Header */}
+            <div className="bg-paper border-b border-border-ink/40 px-4 py-2.5 flex items-center justify-between text-[10px] font-mono text-ink">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-accent/40 animate-pulse" />
+                <span>TERMINAL AUDIT CONSOLE // SUBJECT: CHINTALA_SAI_VARUN</span>
+              </div>
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-ink/20" />
+                <span className="w-1.5 h-1.5 rounded-full bg-ink/30" />
+                <span className="w-1.5 h-1.5 rounded-full bg-accent/60" />
+              </div>
+            </div>
+
+            {/* Terminal Body */}
+            <div className="p-4 h-48 overflow-y-auto font-mono text-[11px] text-ink-muted leading-relaxed space-y-1 bg-black/5 dark:bg-black/30">
+              {terminalHistory.map((line, idx) => (
+                <div key={idx} className="whitespace-pre-wrap select-text">
+                  {line}
+                </div>
+              ))}
+            </div>
+
+            {/* Terminal Input Form */}
+            <form onSubmit={handleTerminalSubmit} className="flex border-t border-border-ink/30 bg-paper/30">
+              <span className="pl-4 py-2 text-[11px] font-mono text-accent select-none">
+                visitor@threatintel:~#
+              </span>
+              <input
+                type="text"
+                value={terminalInput}
+                onChange={(e) => setTerminalInput(e.target.value)}
+                placeholder="Type 'help' and press Enter..."
+                className="flex-1 bg-transparent outline-none border-none py-2 px-2 text-[11px] font-mono text-ink placeholder-ink-muted/50"
+              />
+            </form>
           </motion.div>
 
           {/* Quick network credentials */}
@@ -634,7 +846,10 @@ export default function Page() {
             return (
               <div
                 key={cluster.id}
-                onMouseEnter={() => setSelectedSkill(cluster.id)}
+                onMouseEnter={() => {
+                  setSelectedSkill(cluster.id);
+                  playAudioTick(650, 0.04);
+                }}
                 onMouseLeave={() => setSelectedSkill(null)}
                 className={`p-5 rounded-2xl bg-paper-node border transition-all duration-300 flex flex-col justify-between node-theme-${
                   cluster.id === "backend-constellation" ? "project" :
@@ -701,7 +916,10 @@ export default function Page() {
               >
                 {/* Header card summary */}
                 <div
-                  onClick={() => setSelectedProjectSpec(isSelected ? null : proj.id)}
+                  onClick={() => {
+                    setSelectedProjectSpec(isSelected ? null : proj.id);
+                    playAudioTick(isSelected ? 500 : 750, 0.08);
+                  }}
                   className="p-6 cursor-pointer flex flex-col justify-between h-48 select-none border-b border-border-ink/40 hover:bg-paper/20 transition-colors"
                 >
                   <div>

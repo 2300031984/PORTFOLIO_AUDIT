@@ -116,10 +116,20 @@ body {
 }
 
 .react-flow__edge.active .react-flow__edge-path {
-  stroke: var(--color-accent);
-  stroke-width: 4;
-  stroke-dasharray: 0;
-  filter: drop-shadow(0 0 4px var(--color-accent));
+  stroke: var(--color-accent) !important;
+  stroke-width: 3.5 !important;
+  stroke-dasharray: 8 8 !important;
+  animation: dash-flow 0.8s linear infinite !important;
+  filter: drop-shadow(0 0 5px var(--color-accent)) !important;
+}
+
+@keyframes dash-flow {
+  from {
+    stroke-dashoffset: 16;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .react-flow__edge.highlighted .react-flow__edge-path {
@@ -144,13 +154,15 @@ body {
 
 /* Project Node */
 .node-theme-project {
-  background-color: #EBF3F0 !important;
+  background-color: rgba(235, 243, 240, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #92B5A7 !important;
   color: #0F2A1A !important;
   font-weight: 600;
 }
 .dark .node-theme-project {
-  background-color: #0E1D17 !important;
+  background-color: rgba(14, 29, 23, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #244B3C !important;
   color: #A9C5BA !important;
 }
@@ -164,13 +176,15 @@ body {
 
 /* Career Node */
 .node-theme-career {
-  background-color: #FCF5E5 !important;
+  background-color: rgba(252, 245, 229, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #DFB665 !important;
   color: #3B270A !important;
   font-weight: 600;
 }
 .dark .node-theme-career {
-  background-color: #1A1207 !important;
+  background-color: rgba(26, 18, 7, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #493518 !important;
   color: #E5C583 !important;
 }
@@ -184,13 +198,15 @@ body {
 
 /* Skill Node */
 .node-theme-skill {
-  background-color: #EDF2FC !important;
+  background-color: rgba(237, 242, 252, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #9ABBF7 !important;
   color: #121F3A !important;
   font-weight: 600;
 }
 .dark .node-theme-skill {
-  background-color: #0E1421 !important;
+  background-color: rgba(14, 20, 33, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #223758 !important;
   color: #ACC5F3 !important;
 }
@@ -202,13 +218,15 @@ body {
 
 /* Experiment Node */
 .node-theme-experiment {
-  background-color: #FDF0EB !important;
+  background-color: rgba(253, 240, 235, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #F0A082 !important;
   color: #501D0F !important;
   font-weight: 600;
 }
 .dark .node-theme-experiment {
-  background-color: #200E08 !important;
+  background-color: rgba(32, 14, 8, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #4C2216 !important;
   color: #F4B59D !important;
 }
@@ -220,13 +238,15 @@ body {
 
 /* Github Node */
 .node-theme-github {
-  background-color: #F5EFFB !important;
+  background-color: rgba(245, 239, 251, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #C1A5E7 !important;
   color: #2F174D !important;
   font-weight: 600;
 }
 .dark .node-theme-github {
-  background-color: #140A1F !important;
+  background-color: rgba(20, 10, 31, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
   border-color: #361F51 !important;
   color: #CFB9ED !important;
 }
@@ -296,4 +316,100 @@ h1, h2, h3, .font-serif {
 /* Hide flow attribution minimally for cleaner portfolio view */
 .react-flow__attribution {
   display: none !important;
+}
+
+/* Immersive HUD Mode styling */
+.hud-mode {
+  background-color: #020804 !important;
+  color: #00ff66 !important;
+  --color-accent: #00ff66;
+  --color-accent-glow: rgba(0, 255, 102, 0.3);
+  --color-ink: #00ff66;
+  --color-ink-muted: #00aa44;
+  --color-border-ink: rgba(0, 255, 102, 0.4);
+  --color-edge: rgba(0, 255, 102, 0.5);
+  font-family: monospace, ui-monospace, Courier New !important;
+}
+
+.hud-mode * {
+  font-family: monospace, ui-monospace, Courier New !important;
+}
+
+.hud-mode h1,
+.hud-mode h2,
+.hud-mode h3,
+.hud-mode h4,
+.hud-mode p,
+.hud-mode span,
+.hud-mode div,
+.hud-mode button,
+.hud-mode a {
+  color: #00ff66 !important;
+}
+
+.hud-mode .bg-paper-node,
+.hud-mode .bg-paper {
+  background-color: rgba(3, 12, 6, 0.9) !important;
+  border-color: #00ff66 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.15) !important;
+}
+
+.hud-mode button,
+.hud-mode a {
+  border-color: #00ff66 !important;
+}
+
+.hud-mode button:hover,
+.hud-mode a:hover {
+  background-color: rgba(0, 255, 102, 0.15) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4) !important;
+}
+
+/* Repeating Scanlines Gradient Background */
+.bg-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), 
+  linear-gradient(
+    90deg, 
+    rgba(255, 0, 0, 0.06), 
+    rgba(0, 255, 0, 0.02), 
+    rgba(0, 0, 255, 0.06)
+  );
+  background-size: 100% 4px, 6px 100%;
+}
+
+/* Radar scanning sweep animation */
+.animate-radar-sweep {
+  animation: radar-sweep 5s linear infinite;
+}
+
+@keyframes radar-sweep {
+  0% {
+    top: -5px;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* Sci-fi digital text glitch animation on hover */
+.glitch-hover:hover {
+  animation: text-glitch 0.2s linear infinite;
+}
+
+@keyframes text-glitch {
+  0% {
+    text-shadow: 1.5px 0 0 #00ff66, -1.5px 0 0 #00ffff;
+    transform: translate(0.5px, 0);
+  }
+  50% {
+    text-shadow: -1.5px 0 0 #ff00ff, 1.5px 0 0 #ffff00;
+    transform: translate(-0.5px, 0);
+  }
+  100% {
+    text-shadow: 0 0 0;
+    transform: translate(0, 0);
+  }
 }
