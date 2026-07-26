@@ -26,7 +26,6 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import GraphControls from "@/components/ui/GraphControls";
 import ParticleCanvas from "@/components/ui/ParticleCanvas";
 import CognitiveScan from "@/components/ui/CognitiveScan";
-import GuidedTour from "@/components/ui/GuidedTour";
 
 import {
   Github,
@@ -41,8 +40,7 @@ import {
   FileText,
   Volume2,
   VolumeX,
-  Eye,
-  EyeOff
+  LayoutDashboard
 } from "lucide-react";
 
 // Register custom nodes
@@ -60,13 +58,15 @@ function MemoryMapEmbed({
   handleToggleExpand,
   selectedSkill,
   handleSelectSkill,
-  handlePaneClick
+  handlePaneClick,
+  className
 }: {
   expandedProjects: Record<string, boolean>;
   handleToggleExpand: (id: string) => void;
   selectedSkill: string | null;
   handleSelectSkill: (id: string) => void;
   handlePaneClick: () => void;
+  className?: string;
 }) {
   // Generate nodes and edges dynamically based on state
   const { nodes, edges } = useMemo(() => {
@@ -319,7 +319,7 @@ function MemoryMapEmbed({
   }, [nodes, edges, setRfNodes, setRfEdges]);
 
   return (
-    <div className="w-full h-[600px] border border-border-ink rounded-2xl relative overflow-hidden bg-paper-node/30 shadow-inner">
+    <div className={className || "w-full h-[600px] border border-border-ink rounded-2xl relative overflow-hidden bg-paper-node/30 shadow-inner"}>
       <ReactFlow
         nodes={rfNodes}
         edges={rfEdges}
@@ -338,13 +338,6 @@ function MemoryMapEmbed({
       >
         <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="var(--color-edge)" />
       </ReactFlow>
-      <div className="absolute bottom-4 left-4 z-10 scale-90">
-        <GuidedTour
-          onStartTour={() => {}}
-          onEndTour={() => {}}
-          onExpandProject={handleToggleExpand}
-        />
-      </div>
       <div className="absolute bottom-4 right-4 z-10 scale-90">
         <GraphControls />
       </div>
@@ -363,12 +356,12 @@ export default function Page() {
   const [emailCopied, setEmailCopied] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
 
-  // HUD & Audio preferences
-  const [hudMode, setHudMode] = useState(false);
+  // Immersive design states
+  const [isHudMode, setIsHudMode] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
 
-  // Web Audio diagnostic tone oscillator helper
-  const playAudioTick = useCallback((freq = 600, duration = 0.06, type: OscillatorType = "sine") => {
+  // Audio synthesizer logic
+  const playAudioTick = useCallback((freq = 440, duration = 0.05, type: OscillatorType = "sine") => {
     if (!soundEnabled) return;
     try {
       const audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
@@ -387,82 +380,45 @@ export default function Page() {
     }
   }, [soundEnabled]);
 
-  // Terminal CLI States & Handler
-  const [terminalHistory, setTerminalHistory] = useState<string[]>([
-    "Profile Dossier Console v1.0.0 initialized.",
-    "System status: ONLINE. Connection type: SECURE.",
-    "Type 'help' to audit system capabilities."
-  ]);
-  const [terminalInput, setTerminalInput] = useState("");
+  const toggleHudMode = () => {
+    setIsHudMode(prev => {
+      const next = !prev;
+      if (next) {
+        // Sci-Fi login diagnostics sweep
+        playAudioTick(587.33, 0.12, "triangle");
+        setTimeout(() => playAudioTick(880, 0.15, "triangle"), 80);
+      } else {
+        // Shutdown chime
+        playAudioTick(440, 0.1, "sine");
+        setTimeout(() => playAudioTick(293.66, 0.15, "sine"), 80);
+      }
+      return next;
+    });
+  };
 
-  const handleTerminalSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const input = terminalInput.trim().toLowerCase();
-    if (!input) return;
-
-    playAudioTick(800, 0.08, "square");
-    const updatedHistory = [...terminalHistory, `visitor@threatintel:~# ${terminalInput}`];
-
-    let response: string[] = [];
-    switch (input) {
-      case "help":
-        response = [
-          "Available Diagnostics & Audit Command list:",
-          "  help     - View this listing",
-          "  skills   - Audit Capability Constellations",
-          "  projects - Decrypt Case Studies and Blueprints",
-          "  stats    - Retrieve metric telemetry values",
-          "  contact  - Print diagnostic channel details (Email & LinkedIn)",
-          "  hud      - Shift interface to high-contrast HUD panel mode",
-          "  clear    - Clear console output logs"
-        ];
-        break;
-      case "skills":
-        response = [
-          "AUDITING CAPABILITIES CONSTELLATIONS:",
-          ...portfolioConfig.skills.map(s => `  • ${s.title}: ${s.items.join(", ")}`)
-        ];
-        break;
-      case "projects":
-        response = [
-          "DECRYPTING BLUEPRINTS:",
-          ...portfolioConfig.projects.map(p => `  • [${p.title}] - ${p.tagline}`)
-        ];
-        break;
-      case "stats":
-        response = [
-          "TELEMETRY LOGS:",
-          `  • DSA problems solved: ${portfolioConfig.developer.problemSolving}`,
-          `  • Security labs completed: ${portfolioConfig.developer.securityTraining}`,
-          `  • Total repositories: ${portfolioConfig.githubStats.repos}`,
-          `  • Active Contribution: ${portfolioConfig.githubStats.commits}`
-        ];
-        break;
-      case "contact":
-        response = [
-          "ESTABLISHING DIAGNOSTIC CHANNELS:",
-          `  • Direct Mail: ${portfolioConfig.developer.email}`,
-          `  • Linkedin Network: ${portfolioConfig.developer.linkedinUrl}`,
-          `  • Github Profile: ${portfolioConfig.developer.githubUrl}`
-        ];
-        break;
-      case "hud":
-        setHudMode(prev => !prev);
-        response = [`Shifting theme state. HUD Panel Mode: ${!hudMode ? "ENABLED" : "DISABLED"}`];
-        break;
-      case "clear":
-        setTerminalHistory([]);
-        setTerminalInput("");
-        return;
-      default:
-        response = [
-          `Command not recognized: '${input}'.`,
-          "Type 'help' to review directory permissions."
-        ];
-    }
-
-    setTerminalHistory([...updatedHistory, ...response]);
-    setTerminalInput("");
+  const toggleSound = () => {
+    setSoundEnabled(prev => {
+      const next = !prev;
+      if (next) {
+        try {
+          const audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+          const playBeep = (freq: number, start: number) => {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+            gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime + start);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + start + 0.05);
+            osc.start(audioCtx.currentTime + start);
+            osc.stop(audioCtx.currentTime + start + 0.05);
+          };
+          playBeep(880, 0);
+          playBeep(1200, 0.06);
+        } catch {}
+      }
+      return next;
+    });
   };
 
   // Form states
@@ -489,20 +445,46 @@ export default function Page() {
   };
 
   const handleToggleExpand = useCallback((projectId: string) => {
-    setExpandedProjects((prev) => ({ ...prev, [projectId]: !prev[projectId] }));
-  }, []);
+    setExpandedProjects((prev) => {
+      const isCurrentlyExpanded = !prev[projectId];
+      if (isCurrentlyExpanded) {
+        setSelectedProjectSpec(projectId);
+        playAudioTick(659.25, 0.08, "square");
+      } else {
+        playAudioTick(440, 0.05, "sine");
+      }
+      return { ...prev, [projectId]: isCurrentlyExpanded };
+    });
+  }, [playAudioTick]);
 
   const handleSetExpand = useCallback((projectId: string, expand: boolean) => {
-    setExpandedProjects((prev) => ({ ...prev, [projectId]: expand }));
-  }, []);
+    setExpandedProjects((prev) => {
+      if (expand) {
+        setSelectedProjectSpec(projectId);
+        playAudioTick(659.25, 0.08, "square");
+      } else {
+        playAudioTick(440, 0.05, "sine");
+      }
+      return { ...prev, [projectId]: expand };
+    });
+  }, [playAudioTick]);
 
   const handleSelectSkill = useCallback((skillId: string) => {
-    setSelectedSkill((prev) => (prev === skillId ? null : skillId));
-  }, []);
+    setSelectedSkill((prev) => {
+      const isSelecting = prev !== skillId;
+      if (isSelecting) {
+        playAudioTick(880, 0.05, "sine");
+      } else {
+        playAudioTick(587.33, 0.04, "sine");
+      }
+      return isSelecting ? skillId : null;
+    });
+  }, [playAudioTick]);
 
   const handlePaneClick = useCallback(() => {
     setSelectedSkill(null);
-  }, []);
+    playAudioTick(440, 0.03, "sine");
+  }, [playAudioTick]);
 
   const activeProjectIds = useMemo(() => {
     if (!selectedSkill) return [];
@@ -530,13 +512,259 @@ export default function Page() {
     );
   }
 
+  if (isHudMode) {
+    return (
+      <div className="w-screen h-screen overflow-hidden flex flex-col bg-paper text-ink paper-texture font-sans select-none relative selection:bg-accent/20 cyber-grid-scan">
+        {/* Decorative watercolor stains */}
+        <div className="watercolor-bg opacity-15" />
+
+        {/* Top HUD Bar */}
+        <header className="h-14 border-b border-border-ink/40 flex items-center justify-between px-6 bg-paper-node/30 relative z-20 pointer-events-auto">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="w-4 h-4 text-accent animate-pulse" />
+            <span className="text-[11px] font-mono tracking-widest text-ink uppercase font-bold flex items-center gap-2">
+              Sai Varun // Operations Security Dashboard
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+            </span>
+          </div>
+
+          <div className="text-[10px] font-mono text-ink-muted uppercase tracking-widest hidden md:block">
+            Status: <span className="text-accent font-semibold">Diagnostic HUD Panel Active</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleSound}
+              className="p-2 rounded-full border border-border-ink/50 bg-paper-node/50 hover:border-accent hover:text-accent text-ink cursor-pointer transition-colors"
+              title={soundEnabled ? "Mute interface feedback" : "Unmute interface feedback"}
+            >
+              {soundEnabled ? <Volume2 className="w-4.5 h-4.5 text-accent" /> : <VolumeX className="w-4.5 h-4.5 text-ink-muted" />}
+            </button>
+            <button
+              onClick={toggleHudMode}
+              className="flex items-center gap-1.5 px-4 py-1.5 border border-accent bg-accent text-paper hover:bg-ink hover:border-ink rounded-full text-[10px] font-mono tracking-wider cursor-pointer transition-colors shadow-md"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              Exit HUD Mode
+            </button>
+            <ThemeToggle />
+          </div>
+        </header>
+
+        {/* Main Workspace Dashboard Body */}
+        <main className="flex-1 grid grid-cols-12 gap-4 p-4 overflow-hidden relative z-10">
+          
+          {/* Left panel: Bio & Timeline (col-span-3) */}
+          <div className="col-span-3 h-full flex flex-col gap-4 overflow-hidden">
+            
+            {/* Subject Profile Widget */}
+            <div className="flex-1 bg-paper-node/70 backdrop-blur-md border border-border-ink/50 rounded-2xl p-4 flex flex-col overflow-y-auto">
+              <span className="text-[9px] font-mono tracking-widest text-accent uppercase font-bold block mb-2 border-b border-border-ink/30 pb-1.5">
+                Target Profile dossier
+              </span>
+              <h2 className="font-serif text-xl font-bold text-ink leading-tight mb-2 glitch-hover">
+                {portfolioConfig.developer.name}
+              </h2>
+              <span className="text-[10px] font-mono text-ink-muted uppercase tracking-wider block mb-3">
+                Secure Systems Engineer
+              </span>
+              <p className="text-[11px] font-sans text-ink-muted leading-relaxed text-justify mb-4">
+                {portfolioConfig.developer.about}
+              </p>
+
+              {/* Education & Internship Milestones */}
+              <div className="space-y-3.5 mt-auto pt-3 border-t border-border-ink/30">
+                <div>
+                  <span className="text-[8px] font-mono text-accent uppercase block leading-none mb-1">Education</span>
+                  <h4 className="text-[11px] font-serif font-bold text-ink leading-tight">
+                    {portfolioConfig.education.institution}
+                  </h4>
+                  <p className="text-[10px] text-ink-muted leading-snug">
+                    B.Tech CSE &bull; {portfolioConfig.education.duration} &bull; CGPA: 9.56
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[8px] font-mono text-accent uppercase block leading-none mb-1">Internship</span>
+                  <h4 className="text-[11px] font-serif font-bold text-ink leading-tight">
+                    {portfolioConfig.internship.company}
+                  </h4>
+                  <p className="text-[10px] text-ink-muted leading-snug">
+                    {portfolioConfig.internship.role} &bull; {portfolioConfig.internship.duration}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Development History Widget */}
+            <div className="h-48 bg-paper-node/70 backdrop-blur-md border border-border-ink/50 rounded-2xl p-4 overflow-y-auto">
+              <span className="text-[9px] font-mono tracking-widest text-accent uppercase font-bold block mb-3 border-b border-border-ink/30 pb-1.5">
+                Chronology logs
+              </span>
+              <div className="space-y-3 relative border-l border-border-ink/40 pl-4 ml-2">
+                {[
+                  { year: "2023", title: "Engineering Foundations", desc: "Started Computer Science Engineering with a focus on DSA, networks, and databases." },
+                  { year: "2025", title: "Secure Intern & Labs", desc: "Internship at EduSkills (Java/Spring Boot/JWT) and completed 100+ TryHackMe security rooms." },
+                  { year: "2026", title: "AI & Threat Audits", desc: "Building agentic AI tools (RAG) and automated threat detection platforms." }
+                ].map((time, idx) => (
+                  <div key={idx} className="relative group">
+                    <span className="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-accent border-2 border-paper transition-transform duration-300 group-hover:scale-125" />
+                    <span className="text-[9px] font-mono text-accent block leading-none font-bold">{time.year} &bull; {time.title}</span>
+                    <p className="text-[10px] text-ink-muted leading-normal mt-0.5">{time.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Center panel: Network Graph Map (col-span-6) */}
+          <div className="col-span-6 h-full flex flex-col border border-border-ink/50 bg-paper-node/30 backdrop-blur-md rounded-2xl p-4 relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-border-ink/30 pb-2 mb-3 z-10">
+              <div>
+                <span className="text-[9px] font-mono tracking-widest text-accent uppercase font-bold block">
+                  Map: Cognitive Constellation
+                </span>
+                <p className="text-[10px] text-ink-muted leading-none mt-0.5">
+                  Click nodes to decrypt development dossiers, code files, and learning challenges.
+                </p>
+              </div>
+              <div className="text-[9px] font-mono text-accent bg-accent/5 px-2 py-0.5 rounded border border-accent/20">
+                ACTIVE MAP
+              </div>
+            </div>
+
+            <ReactFlowProvider>
+              <MemoryMapEmbed
+                expandedProjects={expandedProjects}
+                handleToggleExpand={handleToggleExpand}
+                selectedSkill={selectedSkill}
+                handleSelectSkill={handleSelectSkill}
+                handlePaneClick={handlePaneClick}
+                className="w-full flex-1 relative overflow-hidden bg-paper/20 rounded-xl"
+              />
+            </ReactFlowProvider>
+          </div>
+
+          {/* Right panel: Active specs, achievements & commits (col-span-3) */}
+          <div className="col-span-3 h-full flex flex-col gap-4 overflow-hidden">
+            
+            {/* Decrypted Specs / Terminal Panel */}
+            <div className="flex-1 bg-paper-node/70 backdrop-blur-md border border-border-ink/50 rounded-2xl p-4 flex flex-col overflow-y-auto">
+              <span className="text-[9px] font-mono tracking-widest text-accent uppercase font-bold block mb-2 border-b border-border-ink/30 pb-1.5">
+                Dossier Spec Decrypter
+              </span>
+              
+              {selectedProjectSpec ? (() => {
+                const proj = portfolioConfig.projects.find(p => p.id === selectedProjectSpec);
+                if (!proj) return <p className="text-[11px] font-mono text-ink-muted">Failed to locate dossier.</p>;
+                return (
+                  <div className="space-y-3.5 text-[11px] font-sans">
+                    <div>
+                      <h3 className="font-serif text-base font-bold text-ink leading-tight">
+                        {proj.title}
+                      </h3>
+                      <p className="text-[10px] text-ink-muted leading-normal mt-0.5">
+                        {proj.tagline}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="text-[8px] font-mono text-accent uppercase block leading-none mb-1">Architecture Features</span>
+                      <ul className="list-disc pl-3.5 space-y-1 text-ink-muted text-[10px]">
+                        {proj.features.map((f, idx) => (
+                          <li key={idx}>{f}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-accent/[0.03] border border-accent/20 p-2.5 rounded-xl">
+                      <span className="text-[8px] font-mono text-accent uppercase block leading-none font-bold mb-0.5">Verified Impact</span>
+                      <p className="text-[10px] text-ink font-semibold leading-relaxed font-serif">{proj.journey.impact}</p>
+                    </div>
+
+                    <div className="flex flex-col gap-2 pt-1.5">
+                      {proj.githubUrl && (
+                        <a
+                          href={proj.githubUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={() => playAudioTick(1200, 0.05)}
+                          className="flex items-center justify-center gap-1.5 py-2 border border-ink bg-ink text-paper hover:bg-accent rounded-lg text-[10px] font-mono cursor-pointer transition-colors shadow-sm"
+                        >
+                          <Github className="w-3.5 h-3.5" />
+                          Decrypt Code Base
+                        </a>
+                      )}
+                      {proj.reportUrl && (
+                        <a
+                          href={proj.reportUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={() => playAudioTick(1200, 0.05)}
+                          className="flex items-center justify-center gap-1.5 py-2 border border-accent bg-accent text-paper hover:bg-ink rounded-lg text-[10px] font-mono cursor-pointer transition-colors shadow-sm animate-pulse-glow"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          View Pentest Report
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                );
+              })() : (
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
+                  <Terminal className="w-8 h-8 text-ink-muted/50 mb-3 animate-pulse" />
+                  <p className="text-[11px] font-mono text-ink-muted leading-relaxed">
+                    System standby. Select any project node in the network graph or click a case in blueprints to load system telemetry.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Achievements & GitHub Stats Widget */}
+            <div className="h-56 bg-paper-node/70 backdrop-blur-md border border-border-ink/50 rounded-2xl p-4 flex flex-col justify-between overflow-y-auto">
+              <div>
+                <span className="text-[9px] font-mono tracking-widest text-accent uppercase font-bold block mb-3 border-b border-border-ink/30 pb-1.5">
+                  Diagnostic Telemetry
+                </span>
+                
+                <div className="grid grid-cols-2 gap-2 text-center mb-3">
+                  <div className="bg-paper/40 p-2 border border-border-ink/20 rounded-xl">
+                    <span className="text-base font-serif font-bold text-accent block leading-none">400+</span>
+                    <span className="text-[8px] font-mono text-ink-muted uppercase leading-none block mt-1">DSA Solved</span>
+                  </div>
+                  <div className="bg-paper/40 p-2 border border-border-ink/20 rounded-xl">
+                    <span className="text-base font-serif font-bold text-accent block leading-none">100+</span>
+                    <span className="text-[8px] font-mono text-ink-muted uppercase leading-none block mt-1">THM Labs</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 text-[10px] font-mono text-ink-muted">
+                  <div className="flex justify-between border-b border-border-ink/10 pb-1">
+                    <span>AWS CLOUD</span>
+                    <span className="text-ink font-semibold">VERIFIED</span>
+                  </div>
+                  <div className="flex justify-between border-b border-border-ink/10 pb-1">
+                    <span>MS SC-200</span>
+                    <span className="text-ink font-semibold">VERIFIED</span>
+                  </div>
+                  <div className="flex justify-between pb-1">
+                    <span>ORACLE AI</span>
+                    <span className="text-ink font-semibold">VERIFIED</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-[9px] font-mono text-center text-ink-muted/60 border-t border-border-ink/20 pt-2 leading-none mt-2">
+                CORE SYSTEM VER. 2026.07
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
-    <div className={`relative min-h-screen bg-paper text-ink paper-texture font-sans selection:bg-accent/20 transition-colors duration-500 ${hudMode ? "hud-mode bg-scanlines" : ""}`}>
-      {/* Radar sweep scanning line overlay when HUD active */}
-      {hudMode && (
-        <div className="pointer-events-none fixed inset-x-0 h-1 bg-accent/40 shadow-[0_0_15px_rgba(0,255,102,0.8)] z-50 animate-radar-sweep" />
-      )}
-      
+    <div className="relative min-h-screen bg-paper text-ink paper-texture font-sans selection:bg-accent/20">
       {/* Decorative watercolor stains */}
       <div className="watercolor-bg" />
 
@@ -562,8 +790,8 @@ export default function Page() {
             <button
               key={item.id}
               onClick={() => {
+                playAudioTick(783.99, 0.05);
                 document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
-                playAudioTick(700, 0.04);
               }}
               className="text-[10px] font-mono px-3 py-1.5 rounded-full text-ink-muted hover:text-ink hover:bg-paper/40 cursor-pointer transition-all duration-200"
             >
@@ -573,55 +801,35 @@ export default function Page() {
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
-          {/* Sound preference Toggle */}
           <button
-            onClick={() => {
-              setSoundEnabled(!soundEnabled);
-              // Play a quick chime trigger if sound is being enabled
-              if (!soundEnabled) {
-                setTimeout(() => {
-                  try {
-                    const audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-                    const osc = audioCtx.createOscillator();
-                    const gainNode = audioCtx.createGain();
-                    osc.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-                    osc.type = "sine";
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                    gainNode.gain.setValueAtTime(0.015, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.08);
-                  } catch {
-                    // Ignore initialization failures
-                  }
-                }, 50);
-              }
-            }}
-            className={`p-2 rounded-full border bg-paper-node hover:bg-ink hover:text-paper cursor-pointer transition-colors shadow-sm ${soundEnabled ? "border-accent text-accent animate-pulse" : "border-border-ink text-ink-muted"}`}
-            title={soundEnabled ? "Mute diagnostics" : "Enable diagnostics"}
+            onClick={toggleSound}
+            className="p-2.5 rounded-full border border-border-ink bg-paper-node hover:border-accent hover:text-accent text-ink cursor-pointer transition-all duration-300"
+            title={soundEnabled ? "Mute interface feedback" : "Unmute interface feedback"}
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            {soundEnabled ? <Volume2 className="w-4 h-4 text-accent" /> : <VolumeX className="w-4 h-4 text-ink-muted" />}
           </button>
 
-          {/* HUD Mode Toggle */}
           <button
-            onClick={() => {
-              setHudMode(!hudMode);
-              playAudioTick(1000, 0.12, "square");
-            }}
-            className={`p-2 rounded-full border bg-paper-node hover:bg-ink hover:text-paper cursor-pointer transition-colors shadow-sm ${hudMode ? "border-accent text-accent animate-pulse" : "border-border-ink text-ink-muted"}`}
-            title={hudMode ? "Return to default view" : "Enter diagnostic HUD view"}
+            onClick={toggleHudMode}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300 cursor-pointer ${
+              isHudMode
+                ? "bg-accent border-accent text-paper shadow-[0_0_12px_rgba(185,74,36,0.3)] hover:scale-102"
+                : "border-border-ink bg-paper-node hover:border-accent hover:text-accent text-ink"
+            }`}
+            title="Toggle Diagnostic HUD Dashboard Mode"
           >
-            {hudMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <LayoutDashboard className={`w-4 h-4 ${isHudMode ? "animate-pulse" : ""}`} />
+            <span className="text-[10px] font-mono uppercase tracking-wider font-bold">
+              {isHudMode ? "Exit HUD" : "HUD Mode"}
+            </span>
           </button>
 
           <button
             onClick={() => {
+              playAudioTick(880, 0.05);
               setCognitiveScanActive(true);
-              playAudioTick(900, 0.1, "sine");
             }}
-            className="group flex items-center gap-2 px-5 py-2 rounded-full border border-ink bg-paper-node hover:bg-ink hover:text-paper text-ink font-serif italic text-xs tracking-wider shadow-sm hover:scale-102 hover:shadow-[0_0_12px_var(--color-accent-glow)] transition-all duration-300 cursor-pointer"
+            className="group hidden md:flex items-center gap-2 px-5 py-2 rounded-full border border-ink bg-paper-node hover:bg-ink hover:text-paper text-ink font-serif italic text-xs tracking-wider shadow-sm hover:scale-102 hover:shadow-[0_0_12px_var(--color-accent-glow)] transition-all duration-300 cursor-pointer"
           >
             <Terminal className="w-3.5 h-3.5" />
             Initiate Cognitive Scan
@@ -694,50 +902,6 @@ export default function Page() {
             >
               Download Resume
             </a>
-          </motion.div>
-
-          {/* Cyber Terminal CLI Console */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 1.2 }}
-            className="w-full max-w-2xl mt-12 border border-border-ink bg-paper-node/80 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg text-left"
-          >
-            {/* Terminal Header */}
-            <div className="bg-paper border-b border-border-ink/40 px-4 py-2.5 flex items-center justify-between text-[10px] font-mono text-ink">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-accent/40 animate-pulse" />
-                <span>TERMINAL AUDIT CONSOLE // SUBJECT: CHINTALA_SAI_VARUN</span>
-              </div>
-              <div className="flex gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-ink/20" />
-                <span className="w-1.5 h-1.5 rounded-full bg-ink/30" />
-                <span className="w-1.5 h-1.5 rounded-full bg-accent/60" />
-              </div>
-            </div>
-
-            {/* Terminal Body */}
-            <div className="p-4 h-48 overflow-y-auto font-mono text-[11px] text-ink-muted leading-relaxed space-y-1 bg-black/5 dark:bg-black/30">
-              {terminalHistory.map((line, idx) => (
-                <div key={idx} className="whitespace-pre-wrap select-text">
-                  {line}
-                </div>
-              ))}
-            </div>
-
-            {/* Terminal Input Form */}
-            <form onSubmit={handleTerminalSubmit} className="flex border-t border-border-ink/30 bg-paper/30">
-              <span className="pl-4 py-2 text-[11px] font-mono text-accent select-none">
-                visitor@threatintel:~#
-              </span>
-              <input
-                type="text"
-                value={terminalInput}
-                onChange={(e) => setTerminalInput(e.target.value)}
-                placeholder="Type 'help' and press Enter..."
-                className="flex-1 bg-transparent outline-none border-none py-2 px-2 text-[11px] font-mono text-ink placeholder-ink-muted/50"
-              />
-            </form>
           </motion.div>
 
           {/* Quick network credentials */}
@@ -846,10 +1010,7 @@ export default function Page() {
             return (
               <div
                 key={cluster.id}
-                onMouseEnter={() => {
-                  setSelectedSkill(cluster.id);
-                  playAudioTick(650, 0.04);
-                }}
+                onMouseEnter={() => setSelectedSkill(cluster.id)}
                 onMouseLeave={() => setSelectedSkill(null)}
                 className={`p-5 rounded-2xl bg-paper-node border transition-all duration-300 flex flex-col justify-between node-theme-${
                   cluster.id === "backend-constellation" ? "project" :
@@ -916,10 +1077,7 @@ export default function Page() {
               >
                 {/* Header card summary */}
                 <div
-                  onClick={() => {
-                    setSelectedProjectSpec(isSelected ? null : proj.id);
-                    playAudioTick(isSelected ? 500 : 750, 0.08);
-                  }}
+                  onClick={() => setSelectedProjectSpec(isSelected ? null : proj.id)}
                   className="p-6 cursor-pointer flex flex-col justify-between h-48 select-none border-b border-border-ink/40 hover:bg-paper/20 transition-colors"
                 >
                   <div>
