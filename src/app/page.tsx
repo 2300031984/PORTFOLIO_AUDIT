@@ -146,11 +146,12 @@ function MemoryMapEmbed({
       let px = 0;
       let py = 0;
       if (idx === 0) { px = -600; py = -150; }
-      else if (idx === 1) { px = -360; py = -250; }
-      else if (idx === 2) { px = -120; py = -320; }
-      else if (idx === 3) { px = 120; py = -320; }
-      else if (idx === 4) { px = 360; py = -250; }
-      else if (idx === 5) { px = 600; py = -150; }
+      else if (idx === 1) { px = -400; py = -230; }
+      else if (idx === 2) { px = -200; py = -290; }
+      else if (idx === 3) { px = 0; py = -320; }
+      else if (idx === 4) { px = 200; py = -290; }
+      else if (idx === 5) { px = 400; py = -230; }
+      else if (idx === 6) { px = 600; py = -150; }
 
       listNodes.push({
         id: `proj-${proj.id}`,
@@ -198,9 +199,12 @@ function MemoryMapEmbed({
             jx = px - 50 - jIdx * 100;
             jy = py - 180 - jIdx * 180;
           } else if (idx === 3) {
+            jx = px + (jIdx % 2 === 0 ? -80 : 80);
+            jy = py - 150 - jIdx * 160;
+          } else if (idx === 4) {
             jx = px + 50 + jIdx * 100;
             jy = py - 180 - jIdx * 180;
-          } else if (idx === 4) {
+          } else if (idx === 5) {
             jx = px + 120 + jIdx * 250;
             jy = py - 150 - jIdx * 50;
           } else {
@@ -238,10 +242,11 @@ function MemoryMapEmbed({
       let sx = 0;
       let sy = 0;
       if (idx === 0) { sx = -520; sy = 220; }
-      else if (idx === 1) { sx = -200; sy = 280; }
-      else if (idx === 2) { sx = 200; sy = 280; }
+      else if (idx === 1) { sx = -260; sy = 300; }
+      else if (idx === 2) { sx = 260; sy = 300; }
       else if (idx === 3) { sx = 520; sy = 220; }
-      else if (idx === 4) { sx = 0; sy = 340; } // Core CS cluster in center-bottom
+      else if (idx === 4) { sx = -150; sy = 380; } // Core CS cluster in center-bottom
+      else if (idx === 5) { sx = 150; sy = 380; } // AI cluster in center-bottom
 
       listNodes.push({
         id: `skill-${skill.id}`,
@@ -618,8 +623,8 @@ export default function Page() {
           </p>
         </div>
 
-        {/* 5-Column Skills Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+        {/* 6 Skills Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {portfolioConfig.skills.map((cluster) => {
             const isHighlighted = selectedSkill === cluster.id;
             const borderClass = isHighlighted
@@ -635,7 +640,8 @@ export default function Page() {
                   cluster.id === "backend-constellation" ? "project" :
                   cluster.id === "security-constellation" ? "skill" :
                   cluster.id === "cloud-constellation" ? "career" :
-                  cluster.id === "programming-constellation" ? "github" : "experiment"
+                  cluster.id === "programming-constellation" ? "github" :
+                  cluster.id === "ai-constellation" ? "project" : "experiment"
                 } ${borderClass}`}
               >
                 <div>

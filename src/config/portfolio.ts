@@ -102,8 +102,8 @@ export const portfolioConfig: PortfolioConfig = {
     name: "Chintala Sai Varun",
     title: "Secure Systems Engineer",
     subTitle: "Every system leaves traces. Every trace tells a story. My work begins where patterns emerge.",
-    about: "I build secure intelligent systems at the intersection of backend engineering, threat detection, and cloud architecture. Fascinated by detecting patterns hidden inside complex data flows.",
-    lovesSolving: "Threat patterns, secure access delegation protocols, and high-throughput backend pipelines.",
+    about: "I build secure intelligent systems, AI-powered backend applications, LLM-driven workflows, and security automation platforms. Experienced in Python, Java, Spring Boot, FastAPI, RAG, and cloud architecture.",
+    lovesSolving: "Agentic AI workflows, secure access delegation protocols, and high-throughput backend pipelines.",
     email: "saivarun699@gmail.com",
     githubUrl: "https://github.com/2300031984",
     linkedinUrl: "https://www.linkedin.com/in/saivarun1/",
@@ -145,22 +145,23 @@ export const portfolioConfig: PortfolioConfig = {
   },
   internship: {
     role: "Java Full Stack Development Intern",
-    company: "EduSkills Foundation",
+    company: "EduSkills (Supported by NEAT Cell, NCTE)",
     location: "Remote",
-    duration: "Oct 2023 – Nov 2023",
+    duration: "April 2025 – June 2025",
     highlights: [
-      "Designed and developed responsive web interfaces utilizing HTML5, CSS3, and JavaScript.",
-      "Implemented database schemas, SQL queries, and connections using Spring Boot microservices.",
-      "Built server-side web application components utilizing Spring Boot and MVC architectural guidelines.",
-      "Conducted debugging and integration checks to isolate latency spikes in API routers."
+      "Developed secure backend applications using Java and Spring Boot following MVC architecture and software engineering best practices.",
+      "Integrated Spring Security with JWT Authentication to implement secure role-based access control.",
+      "Designed and optimized MySQL database schemas to improve data organization and application performance.",
+      "Tested and validated REST APIs using Postman while ensuring secure coding, functionality, and reliability.",
+      "Used Git for version control and collaborated in an Agile development environment."
     ],
-    techStack: ["Java", "Spring Boot", "REST APIs", "Database Optimization", "Authentication Systems", "API Testing"]
+    techStack: ["Java", "Spring Boot", "REST APIs", "Spring Security", "JWT Authentication", "Hibernate ORM", "MySQL"]
   },
   education: {
     degree: "Bachelor of Technology",
     major: "Computer Science and Engineering",
-    institution: "Koneru Lakshmaiah Education Foundation (KL University)",
-    duration: "2021 – 2025",
+    institution: "Koneru Lakshmaiah Education Foundation, Vijayawada",
+    duration: "2023 – 2027",
     highlights: [
       "Maintained an excellent CGPA of 9.56/10.",
       "Specializing in Secure Software Engineering and Cloud Systems integrations.",
@@ -282,9 +283,9 @@ export const portfolioConfig: PortfolioConfig = {
     },
     {
       id: "soc-automation-platform",
-      title: "AI Cybersecurity Threat Intelligence & SOC Automation Platform",
-      tagline: "Enterprise-grade AI-powered Security Operations Center (SOC) automation platform combining threat intelligence, SOAR workflows, vulnerability management, and LLM-driven incident response playbooks.",
-      skills: ["backend-constellation", "security-constellation", "cloud-constellation", "programming-constellation", "core-cs-constellation"],
+      title: "AI Agentic Threat Intelligence & SOC Automation Platform",
+      tagline: "Enterprise-grade AI-powered Threat Intelligence & SOC automation platform combining LangChain RAG, SOAR workflows, and agentic vulnerability management.",
+      skills: ["backend-constellation", "security-constellation", "cloud-constellation", "programming-constellation", "core-cs-constellation", "ai-constellation"],
       techStack: ["FastAPI", "SQLAlchemy", "PostgreSQL", "n8n SOAR", "LangChain", "Google Gemini", "Docker", "JWT RBAC"],
       githubUrl: "https://github.com/2300031984/AI-Cybersecurity-SOC-Automation-Platform",
       features: [
@@ -302,38 +303,66 @@ export const portfolioConfig: PortfolioConfig = {
         solution: "Implemented parameterized SQLAlchemy query builders combined with role-based access control (RBAC) validations and strict tenant-specific session filters.",
         impact: "Streamlined SOC analyst investigation workflows by reducing incident response compilation latency and isolating threat metrics securely for separate organizations."
       }
+    },
+    {
+      id: "ai-resume-analyzer",
+      title: "AI Resume Analyzer",
+      tagline: "AI-powered resume analysis, ATS scoring, and semantic gap matching using RAG.",
+      skills: ["backend-constellation", "programming-constellation", "ai-constellation"],
+      techStack: ["Spring Boot", "Gemini AI", "LangChain", "ChromaDB", "RAG", "REST APIs"],
+      githubUrl: "https://github.com/2300031984/AI-Resume-Analyzer",
+      features: [
+        "Semantic Profiling: Parsed unstructured resume blocks using Gemini LLM and chunked profiles for high-accuracy match rates.",
+        "Retrieval-Augmented Generation: Integrated ChromaDB vector store to compare candidate experience embeddings against specific job requirements.",
+        "ATS Scoring Engine: Formulated scoring logic to analyze keyword relevance, skill gaps, and experience alignment.",
+        "Spring Backend Architecture: Built a scalable Spring Boot REST API layer handling secure document ingestion, search pipelines, and recommendation flows."
+      ],
+      journey: {
+        question: "Can we engineer a high-throughput backend that performs semantic resume parsing and ATS matching without compromising document structure?",
+        learning: "Vector database indexing, Retrieval-Augmented Generation (RAG) chunking strategies, and processing multi-format resume documents.",
+        experiment: "Developed a pipeline integrating Spring Boot with ChromaDB and LangChain to index resume content and compare against target job descriptions.",
+        challenge: "Parsing irregular layouts in PDF resumes and matching unstructured career data to structured skills taxonomies.",
+        solution: "Implemented hierarchical semantic chunking combined with Gemini LLM extraction to map resume text to normalized vector embeddings.",
+        impact: "Built a scalable automated screening system generating detailed ATS reports, semantic gap analyses, and personalized skill recommendations."
+      }
     }
   ],
   skills: [
     {
       id: "backend-constellation",
       title: "Backend Engineering",
-      items: ["Java", "Spring Boot", "REST APIs", "JWT", "Spring Security", "MySQL", "PostgreSQL"],
-      relatedProjects: ["secure-ride-sharing", "ride-sharing-pentest", "soc-automation-platform"]
+      items: ["Java", "Spring Boot", "FastAPI", "REST APIs", "JWT Authentication", "Spring Security", "MySQL", "PostgreSQL", "Hibernate ORM", "Microservices"],
+      relatedProjects: ["secure-ride-sharing", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer"]
     },
     {
       id: "security-constellation",
-      title: "Cybersecurity",
-      items: ["Threat Hunting", "Incident Response", "Security Operations (SIEM/SOAR)", "Microsoft Sentinel", "OWASP Top 10", "Vulnerability Assessment", "Malware Analysis", "Digital Forensics"],
+      title: "Application Security & Cybersecurity",
+      items: ["OWASP Top 10", "OWASP WSTG", "Penetration Testing", "API Security", "Threat Hunting", "Incident Response", "Vulnerability Assessment", "Secure Coding", "Secure SDLC", "Authentication & Authorization", "Malware Analysis", "Digital Forensics"],
       relatedProjects: ["malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform"]
     },
     {
       id: "cloud-constellation",
       title: "Cloud & DevOps",
-      items: ["AWS", "Docker", "Linux", "Git", "Deployment Automation", "Infrastructure Fundamentals"],
-      relatedProjects: ["secure-ride-sharing", "network-traffic-analysis", "soc-automation-platform"]
+      items: ["AWS (EC2, S3, IAM, RDS)", "Docker", "Kubernetes (basics)", "Linux", "Git", "GitHub Actions", "CI/CD Pipelines", "Deployment Automation"],
+      relatedProjects: ["secure-ride-sharing", "network-traffic-analysis", "soc-automation-platform", "ai-resume-analyzer"]
     },
     {
       id: "programming-constellation",
       title: "Programming",
-      items: ["Java", "Python", "C", "SQL", "Bash scripting", "Competitive Programming"],
-      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform"]
+      items: ["Java", "Python", "SQL", "C", "Bash scripting", "Competitive Programming"],
+      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer"]
     },
     {
       id: "core-cs-constellation",
       title: "Core Computer Science",
       items: ["Data Structures & Algorithms", "DBMS", "Operating Systems", "Computer Networks", "System Design"],
-      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis", "ride-sharing-pentest", "soc-automation-platform"]
+      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer"]
+    },
+    {
+      id: "ai-constellation",
+      title: "AI, LLMs & Agentic Systems",
+      items: ["Gemini API", "Large Language Models (LLMs)", "LangChain", "Retrieval-Augmented Generation (RAG)", "Prompt Engineering", "ChromaDB", "n8n Workflow Automation"],
+      relatedProjects: ["soc-automation-platform", "ai-resume-analyzer", "deepfake-detection"]
     }
   ],
   experiments: [
