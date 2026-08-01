@@ -15,6 +15,8 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const basePath = process.env.NODE_ENV === "production" ? "/PORTFOLIO_AUDIT" : "";
+
 export const metadata: Metadata = {
   title: "The Memory Map — Chintala Sai Varun | Technical Blogs",
   description: "An interactive threat intelligence archive mapping secure systems engineering, malware classification, digital forensics, AI security, penetration testing, threat intelligence, and secure software engineering.",
@@ -27,7 +29,7 @@ export const metadata: Metadata = {
     siteName: "Sai Varun Portfolio",
     images: [
       {
-        url: "/tryhackme_blog_thumbnail.png",
+        url: `${basePath}/tryhackme_blog_thumbnail.png`,
         width: 1200,
         height: 630,
         alt: "Chintala Sai Varun Cybersecurity Blog",
@@ -40,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Chintala Sai Varun | Technical Blogs",
     description: "Sharing practical insights from cybersecurity, AI security, penetration testing, malware analysis, threat intelligence, and secure software engineering.",
-    images: ["/tryhackme_blog_thumbnail.png"],
+    images: [`${basePath}/tryhackme_blog_thumbnail.png`],
   },
 };
 

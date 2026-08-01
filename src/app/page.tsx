@@ -48,6 +48,8 @@ import {
   Clock
 } from "lucide-react";
 
+const basePath = process.env.NODE_ENV === "production" ? "/PORTFOLIO_AUDIT" : "";
+
 // Register custom nodes
 const nodeTypes = {
   central: CentralNode,
@@ -1401,7 +1403,7 @@ export default function Page() {
               {/* Featured Cover Image */}
               <div className="lg:col-span-5 relative w-full aspect-video lg:aspect-square max-h-[360px] rounded-xl overflow-hidden border border-border-ink/30 bg-paper/50">
                 <Image
-                  src={blog.imageUrl}
+                  src={blog.imageUrl.startsWith("/") ? `${basePath}${blog.imageUrl}` : blog.imageUrl}
                   alt={blog.title}
                   fill
                   sizes="(max-width: 1024px) 100vw, 33vw"
