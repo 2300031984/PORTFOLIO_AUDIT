@@ -59,6 +59,21 @@ export interface FeedbackCard {
   comment: string;
 }
 
+export interface Blog {
+  id: string;
+  title: string;
+  category: string;
+  publishedDate: string;
+  readingTime: string;
+  description: string;
+  topics: string[];
+  readUrl: string;
+  githubUrl?: string;
+  imageUrl: string;
+  isFeatured?: boolean;
+  comingSoon?: boolean;
+}
+
 export interface PortfolioConfig {
   developer: {
     name: string;
@@ -95,6 +110,7 @@ export interface PortfolioConfig {
     primaryTech: string;
     contributions: string;
   };
+  blogs: Blog[];
 }
 
 export const portfolioConfig: PortfolioConfig = {
@@ -437,5 +453,127 @@ export const portfolioConfig: PortfolioConfig = {
     repos: "14",
     primaryTech: "Java / Python / JS / TS",
     contributions: "87 Contributions"
-  }
+  },
+  blogs: [
+    {
+      id: "tryhackme-100-labs",
+      title: "What 100+ TryHackMe Labs Taught Me About Cybersecurity",
+      category: "Cybersecurity",
+      publishedDate: "August 2026",
+      readingTime: "8 min read",
+      description: "Lessons learned from completing 100+ hands-on TryHackMe labs covering web security, networking, Active Directory, SOC operations, malware analysis, privilege escalation, and defensive security. The article explains how practical labs helped build a strong cybersecurity mindset and influenced my real-world security projects.",
+      topics: ["TryHackMe", "Cybersecurity", "Web Security", "SOC", "OWASP", "Networking", "Linux"],
+      readUrl: "https://www.linkedin.com/pulse/what-100-tryhackme-labs-taught-me-cybersecurity-chintala-sai-varun-u2hcf/",
+      imageUrl: "/tryhackme_blog_thumbnail.png",
+      isFeatured: true
+    },
+    {
+      id: "ai-threat-intel-soc",
+      title: "Building an Enterprise AI-Powered Threat Intelligence & SOC Automation Platform",
+      category: "AI Security",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "Learn how to build and orchestrate automated threat intelligence pipelines and incident response workflows using FastAPI, LangChain, n8n, and Google Gemini.",
+      topics: ["AI Security", "Threat Intelligence", "SOC", "Automation", "FastAPI"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    },
+    {
+      id: "manual-web-pentesting",
+      title: "Manual Web Application Penetration Testing Using OWASP WSTG",
+      category: "Application Security",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "A comprehensive guide on executing structured manual security assessments for web applications following the OWASP Web Security Testing Guide.",
+      topics: ["Application Security", "OWASP", "Penetration Testing", "WSTG"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    },
+    {
+      id: "malware-analysis-sandbox",
+      title: "Building a Malware Analysis Sandbox with Python",
+      category: "Malware Analysis",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "A deep dive into configuring dynamic and static malware analysis environments and parsing binary PE structure using custom Python automation.",
+      topics: ["Malware Analysis", "Python", "Static Analysis", "Cybersecurity"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    },
+    {
+      id: "idor-testing-practical",
+      title: "Understanding IDOR Through Practical Testing",
+      category: "Application Security",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "Exploring Broken Object Level Authorization (BOLA/IDOR) vulnerabilities, demonstrating detection methods and remediation techniques.",
+      topics: ["Application Security", "IDOR", "Web Security", "Penetration Testing"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    },
+    {
+      id: "jwt-security-best-practices",
+      title: "JWT Authentication Security Best Practices",
+      category: "Cloud Security",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "Secure authorization design using JSON Web Tokens in production, covering signature verification, token algorithms, and secure storage.",
+      topics: ["Cloud Security", "JWT", "Authentication", "API Security"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    },
+    {
+      id: "automating-threat-intel-nvd",
+      title: "Automating Threat Intelligence Using NVD, EPSS & CISA KEV",
+      category: "Threat Intelligence",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "How to aggregate live vulnerability feeds using API integrations with the National Vulnerability Database, EPSS risk scoring, and CISA's Known Exploited Vulnerabilities.",
+      topics: ["Threat Intelligence", "Automation", "CVE", "EPSS", "CISA KEV"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    },
+    {
+      id: "ai-security-copilot",
+      title: "Building an AI Security Copilot with LangChain & Gemini",
+      category: "AI Security",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "Engineering conversational AI agents capable of answering specialized security queries and parsing threat logs using Retrieval-Augmented Generation.",
+      topics: ["AI Security", "LangChain", "Gemini", "RAG", "LLM"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    },
+    {
+      id: "responsible-bug-bounty",
+      title: "Responsible Bug Bounty Hunting: My Learning Journey",
+      category: "Cybersecurity",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "Sharing methodologies, tools, and ethical frameworks for identifying and reporting security vulnerabilities responsibly in public programs.",
+      topics: ["Cybersecurity", "Bug Bounty", "Ethical Hacking", "Vulnerability Hunting"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    },
+    {
+      id: "cybersecurity-student-roadmap",
+      title: "From Student to Security Engineer: My Cybersecurity Roadmap",
+      category: "Career",
+      publishedDate: "Coming Soon",
+      readingTime: "Coming Soon",
+      description: "An actionable engineering guide covering essential concepts, practical labs, resources, and credentials to transition into cybersecurity engineering.",
+      topics: ["Career", "Roadmap", "Cybersecurity", "Learning Path"],
+      readUrl: "#",
+      imageUrl: "",
+      comingSoon: true
+    }
+  ]
 };

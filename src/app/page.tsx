@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import Image from "next/image";
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -40,7 +41,11 @@ import {
   FileText,
   Volume2,
   VolumeX,
-  LayoutDashboard
+  LayoutDashboard,
+  Search,
+  BookOpen,
+  Calendar,
+  Clock
 } from "lucide-react";
 
 // Register custom nodes
@@ -345,6 +350,46 @@ function MemoryMapEmbed({
   );
 }
 
+function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const elementRef = React.useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          let start = 0;
+          const end = value;
+          if (end === 0) return;
+          const duration = 1500; // ms
+          const increment = end / (duration / 16);
+          const animate = () => {
+            start += increment;
+            if (start >= end) {
+              setCount(end);
+            } else {
+              setCount(Math.floor(start));
+              requestAnimationFrame(animate);
+            }
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [value, hasAnimated]);
+
+  return <span ref={elementRef}>{count}{suffix}</span>;
+}
+
 export default function Page() {
   const [mounted, setMounted] = useState(false);
   const [cognitiveScanActive, setCognitiveScanActive] = useState(false);
@@ -355,6 +400,9 @@ export default function Page() {
   const [selectedProjectSpec, setSelectedProjectSpec] = useState<string | null>(null);
   const [emailCopied, setEmailCopied] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [activeSection, setActiveSection] = useState("hero-section");
+  const [blogSearchQuery, setBlogSearchQuery] = useState("");
+  const [selectedBlogCategory, setSelectedBlogCategory] = useState("All");
 
   // Immersive design states
   const [isHudMode, setIsHudMode] = useState(false);
@@ -426,6 +474,41 @@ export default function Page() {
 
   useEffect(() => {
     setMounted(true);
+
+    const sections = [
+      "hero-section",
+      "about-section",
+      "skills-section",
+      "projects-section",
+      "blogs-section",
+      "certifications-section",
+      "map-section",
+      "footprint-section",
+      "contact-section"
+    ];
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-25% 0px -55% 0px",
+      threshold: 0.05,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const handleCopyEmail = () => {
@@ -491,6 +574,21 @@ export default function Page() {
     const skillCluster = portfolioConfig.skills.find((s) => s.id === selectedSkill);
     return skillCluster ? skillCluster.relatedProjects : [];
   }, [selectedSkill]);
+
+  const filteredBlogs = useMemo(() => {
+    return (portfolioConfig.blogs || []).filter((blog) => {
+      const matchesCategory =
+        selectedBlogCategory === "All" || blog.category === selectedBlogCategory;
+      const query = blogSearchQuery.toLowerCase().trim();
+      const matchesSearch =
+        query === "" ||
+        blog.title.toLowerCase().includes(query) ||
+        blog.description.toLowerCase().includes(query) ||
+        blog.topics.some((t) => t.toLowerCase().includes(query)) ||
+        blog.category.toLowerCase().includes(query);
+      return matchesCategory && matchesSearch;
+    });
+  }, [blogSearchQuery, selectedBlogCategory]);
 
   if (!mounted) {
     return (
@@ -784,20 +882,29 @@ export default function Page() {
             { label: "About", id: "about-section" },
             { label: "Capabilities", id: "skills-section" },
             { label: "Blueprints", id: "projects-section" },
+            { label: "Technical Blogs", id: "blogs-section" },
+            { label: "Certifications", id: "certifications-section" },
             { label: "Memory Map", id: "map-section" },
             { label: "Audit Ledger", id: "footprint-section" }
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                playAudioTick(783.99, 0.05);
-                document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="text-[10px] font-mono px-3 py-1.5 rounded-full text-ink-muted hover:text-ink hover:bg-paper/40 cursor-pointer transition-all duration-200"
-            >
-              {item.label}
-            </button>
-          ))}
+          ].map((item) => {
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  playAudioTick(783.99, 0.05);
+                  document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className={`text-[10px] font-mono px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer border ${
+                  isActive
+                    ? "text-accent bg-accent/5 border-accent/20 font-semibold"
+                    : "text-ink-muted hover:text-ink hover:bg-paper/40 border-transparent"
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
@@ -1232,6 +1339,287 @@ export default function Page() {
         </ReactFlowProvider>
       </section>
 
+      {/* SECTION 5.5 — TECHNICAL BLOGS */}
+      <section id="blogs-section" className="max-w-6xl mx-auto px-6 py-24 select-none border-b border-border-ink/15">
+        {/* JSON-LD Structured Data for BlogPosting */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
+              "headline": "What 100+ TryHackMe Labs Taught Me About Cybersecurity",
+              "image": [
+                "https://www.linkedin.com/pulse/what-100-tryhackme-labs-taught-me-cybersecurity-chintala-sai-varun-u2hcf/"
+              ],
+              "datePublished": "2026-08-01T00:00:00Z",
+              "dateModified": "2026-08-01T00:00:00Z",
+              "author": [{
+                "@type": "Person",
+                "name": "Chintala Sai Varun",
+                "url": "https://www.linkedin.com/in/saivarun1/"
+              }],
+              "description": "Lessons learned from completing 100+ hands-on TryHackMe labs covering web security, networking, Active Directory, SOC operations, malware analysis, privilege escalation, and defensive security."
+            })
+          }}
+        />
+
+        <div className="mb-12">
+          <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold block mb-1">
+            Section 05.5 // Intelligence Archive
+          </span>
+          <h2 className="font-serif text-3xl md:text-5xl font-light tracking-tight text-ink leading-tight">
+            Technical Blogs
+          </h2>
+          <p className="text-xs text-ink-muted font-sans mt-2 max-w-2xl">
+            Sharing practical insights from cybersecurity, AI security, penetration testing, malware analysis, threat intelligence, and secure software engineering.
+          </p>
+        </div>
+
+        {/* Blog Statistics Counter Panel */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          {[
+            { metric: 1, label: "Articles Published", desc: "Active dossiers online" },
+            { metric: 9, label: "Articles Planned", desc: "Telemetry pending" },
+            { metric: 13, label: "Topics Covered", desc: "Across cybersecurity domains" },
+            { metric: 8, label: "Est. Reading Time", desc: "Minutes (published content)", suffix: " min" }
+          ].map((stat, idx) => (
+            <div key={idx} className="p-5 rounded-2xl bg-paper-node border border-border-ink shadow-sm text-center node-theme-experiment hover:scale-102 transition-transform duration-300">
+              <span className="text-2xl md:text-3xl font-serif font-bold text-accent block leading-none">
+                <Counter value={stat.metric} suffix={stat.suffix} />
+              </span>
+              <span className="text-[10px] font-mono text-ink block mt-2 font-bold leading-tight uppercase">{stat.label}</span>
+              <span className="text-[9px] font-mono text-ink-muted block mt-1 uppercase leading-none">{stat.desc}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Featured Article Section */}
+        {portfolioConfig.blogs.filter(b => b.isFeatured && !b.comingSoon && (selectedBlogCategory === "All" || b.category === selectedBlogCategory) && (blogSearchQuery === "" || b.title.toLowerCase().includes(blogSearchQuery.toLowerCase()) || b.description.toLowerCase().includes(blogSearchQuery.toLowerCase()) || b.topics.some(t => t.toLowerCase().includes(blogSearchQuery.toLowerCase())))).map((blog) => (
+          <div key={blog.id} className="mb-12 border border-accent/30 bg-paper-node rounded-2xl p-6 md:p-8 shadow-[0_0_20px_var(--color-accent-glow)] ring-1 ring-accent/15">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Featured Cover Image */}
+              <div className="lg:col-span-5 relative w-full aspect-video lg:aspect-square max-h-[360px] rounded-xl overflow-hidden border border-border-ink/30 bg-paper/50">
+                <Image
+                  src={blog.imageUrl}
+                  alt={blog.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 33vw"
+                  priority
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                />
+                <div className="absolute top-3 left-3 flex gap-2">
+                  <span className="bg-accent text-paper text-[8px] font-mono font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shadow">
+                    Featured
+                  </span>
+                  <span className="bg-ink text-paper text-[8px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded border border-border-ink/20">
+                    {blog.category}
+                  </span>
+                </div>
+              </div>
+
+              {/* Featured Meta & Info */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="flex items-center gap-4 text-[9px] font-mono text-ink-muted uppercase">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3 text-accent" />
+                    {blog.publishedDate}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-accent" />
+                    {blog.readingTime}
+                  </span>
+                </div>
+
+                <h3 className="font-serif text-2xl md:text-3xl font-bold text-ink leading-tight">
+                  {blog.title}
+                </h3>
+
+                <p className="font-sans text-xs md:text-sm text-ink-muted leading-relaxed text-justify">
+                  {blog.description}
+                </p>
+
+                {/* Topics pills */}
+                <div className="flex flex-wrap gap-1.5 pt-2">
+                  {blog.topics.map((topic, index) => (
+                    <span key={index} className="bg-paper border border-border-ink px-2 py-0.5 rounded text-[8px] font-mono text-ink">
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Read Button */}
+                <div className="pt-4 flex flex-wrap gap-3">
+                  <a
+                    href={blog.readUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 px-6 py-3 bg-ink text-paper hover:bg-accent hover:shadow-[0_0_15px_var(--color-accent-glow)] border border-transparent rounded-full text-xs font-mono tracking-wider cursor-pointer shadow transition-all duration-300 hover:scale-102"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    Read Article
+                  </a>
+                  {blog.githubUrl && blog.githubUrl !== "#" && (
+                    <a
+                      href={blog.githubUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1.5 px-5 py-3 border border-border-ink bg-paper-node/50 hover:border-accent hover:text-accent rounded-full text-xs font-mono tracking-wider cursor-pointer transition-all duration-300"
+                    >
+                      <Github className="w-4 h-4" />
+                      GitHub Source
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Search and Filters Controller */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-t border-b border-border-ink/20 py-6 mb-8 bg-paper-node/15 px-4 rounded-2xl">
+          {/* Category Filter Tabs */}
+          <div className="flex flex-wrap gap-1.5 max-w-2xl">
+            {["All", "Cybersecurity", "AI Security", "Application Security", "Threat Intelligence", "Malware Analysis", "Cloud Security", "Career"].map((cat) => {
+              const isSelected = selectedBlogCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedBlogCategory(cat)}
+                  aria-label={`Filter by ${cat}`}
+                  className={`text-[9px] font-mono px-3 py-1.5 rounded-full transition-all duration-200 border cursor-pointer ${
+                    isSelected
+                      ? "text-accent bg-accent/5 border-accent/25 font-bold shadow-sm"
+                      : "text-ink-muted border-border-ink/15 bg-paper/30 hover:border-accent/40 hover:text-ink"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Text Search Input */}
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted/50" />
+            <input
+              type="text"
+              placeholder="Search threat reports..."
+              aria-label="Search articles"
+              value={blogSearchQuery}
+              onChange={(e) => setBlogSearchQuery(e.target.value)}
+              className="w-full bg-paper border border-border-ink/80 focus:border-accent pl-9 pr-4 py-2.5 rounded-full text-xs font-sans text-ink outline-none transition-colors"
+            />
+          </div>
+        </div>
+
+        {/* Blog Post List (Filtered Grid) */}
+        {filteredBlogs.length === 0 ? (
+          <div className="h-64 flex flex-col items-center justify-center text-center py-12">
+            <Terminal className="w-10 h-10 text-ink-muted/50 mb-3 animate-pulse" />
+            <h3 className="font-serif text-lg font-bold text-ink mb-1">No Decrypted Telemetry</h3>
+            <p className="text-[10px] font-mono text-ink-muted uppercase max-w-xs">
+              Search query did not yield matches in the current dossier logs.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredBlogs.map((blog) => {
+              if (blog.isFeatured && !blog.comingSoon) return null; // Featured article is already rendered above in its full block
+
+              return (
+                <article
+                  key={blog.id}
+                  className={`border border-border-ink bg-paper-node rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 select-none ${
+                    blog.comingSoon
+                      ? "opacity-60 grayscale-[40%] node-theme-career"
+                      : "hover:border-accent hover:scale-[1.01] hover:shadow-[0_0_15px_var(--color-accent-glow)] node-theme-skill"
+                  }`}
+                >
+                  <div>
+                    {/* Header category and coming soon */}
+                    <div className="flex justify-between items-center text-[8px] font-mono tracking-widest uppercase font-semibold border-b border-border-ink/30 pb-2 mb-3">
+                      <span className="text-ink-muted">{blog.category}</span>
+                      {blog.comingSoon ? (
+                        <span className="text-accent animate-pulse font-bold px-1.5 py-0.5 rounded bg-accent/5 border border-accent/25">
+                          Coming Soon
+                        </span>
+                      ) : (
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                      )}
+                    </div>
+
+                    <h4 className="font-serif text-sm font-bold text-ink leading-tight mb-2 min-h-[38px] group-hover:text-accent">
+                      {blog.title}
+                    </h4>
+
+                    {/* Metadata dates */}
+                    <div className="flex items-center gap-3 text-[8px] font-mono text-ink-muted uppercase mb-3">
+                      <span className="flex items-center gap-0.5">
+                        <Calendar className="w-2.5 h-2.5" />
+                        {blog.publishedDate}
+                      </span>
+                      <span className="flex items-center gap-0.5">
+                        <Clock className="w-2.5 h-2.5" />
+                        {blog.readingTime}
+                      </span>
+                    </div>
+
+                    <p className="font-sans text-[11px] text-ink-muted leading-relaxed mb-4 text-justify min-h-[66px]">
+                      {blog.description}
+                    </p>
+                  </div>
+
+                  <div>
+                    {/* Topics tags */}
+                    <div className="flex flex-wrap gap-1 mb-4 border-t border-border-ink/20 pt-3">
+                      {blog.topics.map((topic, tIdx) => (
+                        <span key={tIdx} className="bg-paper border border-border-ink/30 px-1.5 py-0.5 rounded text-[8px] font-mono text-ink-muted">
+                          {topic}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Read Action Button */}
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={blog.readUrl}
+                        aria-label={`Read ${blog.title}`}
+                        onClick={(e) => {
+                          if (blog.comingSoon) {
+                            e.preventDefault();
+                          } else {
+                            playAudioTick(1200, 0.05);
+                          }
+                        }}
+                        className={`flex-1 text-center py-2 rounded-lg text-[9px] font-mono cursor-pointer transition-colors ${
+                          blog.comingSoon
+                            ? "bg-border-ink/20 text-ink-muted/50 border border-border-ink/20 cursor-not-allowed"
+                            : "bg-ink text-paper hover:bg-accent border border-transparent"
+                        }`}
+                      >
+                        {blog.comingSoon ? "Telemetry Pending" : "Decrypt Article"}
+                      </a>
+                      {blog.githubUrl && blog.githubUrl !== "#" && !blog.comingSoon && (
+                        <a
+                          href={blog.githubUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-1.5 border border-border-ink hover:border-accent hover:text-accent rounded-lg bg-paper cursor-pointer transition-colors"
+                          title="View Source on GitHub"
+                        >
+                          <Github className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {/* SECTION 6 — EXPERIENCE & SECTION 7 — EDUCATION & SECTION 8 — CERTIFICATIONS */}
       <section className="max-w-6xl mx-auto px-6 py-24 select-none border-b border-border-ink/15">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1306,7 +1694,7 @@ export default function Page() {
           </div>
 
           {/* Section 8: Certifications */}
-          <div className="space-y-4">
+          <div id="certifications-section" className="space-y-4">
             <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold block">Section 08 // Verification Ledger</span>
             <h2 className="font-serif text-2xl font-light text-ink">Certifications</h2>
 
