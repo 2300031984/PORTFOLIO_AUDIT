@@ -577,8 +577,12 @@ export default function Page() {
     return skillCluster ? skillCluster.relatedProjects : [];
   }, [selectedSkill]);
 
+  const publishedBlogs = useMemo(() => {
+    return (portfolioConfig.blogs || []).filter((blog) => !blog.comingSoon);
+  }, []);
+
   const filteredBlogs = useMemo(() => {
-    return (portfolioConfig.blogs || []).filter((blog) => {
+    return publishedBlogs.filter((blog) => {
       const matchesCategory =
         selectedBlogCategory === "All" || blog.category === selectedBlogCategory;
       const query = blogSearchQuery.toLowerCase().trim();
@@ -590,7 +594,25 @@ export default function Page() {
         blog.category.toLowerCase().includes(query);
       return matchesCategory && matchesSearch;
     });
-  }, [blogSearchQuery, selectedBlogCategory]);
+  }, [publishedBlogs, blogSearchQuery, selectedBlogCategory]);
+
+  const availableBlogCategories = useMemo(() => {
+    const categories = Array.from(new Set(publishedBlogs.map((b) => b.category)));
+    return ["All", ...categories];
+  }, [publishedBlogs]);
+
+  const blogStats = useMemo(() => {
+    const topics = new Set(publishedBlogs.flatMap((b) => b.topics));
+    const totalReadingMinutes = publishedBlogs.reduce((acc, b) => {
+      const match = b.readingTime.match(/(\d+)/);
+      return acc + (match ? parseInt(match[1], 10) : 0);
+    }, 0);
+    return {
+      publishedCount: publishedBlogs.length,
+      topicsCount: topics.size,
+      readingTime: totalReadingMinutes || 8,
+    };
+  }, [publishedBlogs]);
 
   if (!mounted) {
     return (
@@ -1379,12 +1401,11 @@ export default function Page() {
         </div>
 
         {/* Blog Statistics Counter Panel */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
           {[
-            { metric: 1, label: "Articles Published", desc: "Active dossiers online" },
-            { metric: 9, label: "Articles Planned", desc: "Telemetry pending" },
-            { metric: 13, label: "Topics Covered", desc: "Across cybersecurity domains" },
-            { metric: 8, label: "Est. Reading Time", desc: "Minutes (published content)", suffix: " min" }
+            { metric: blogStats.publishedCount, label: "Articles Published", desc: "Active dossiers online" },
+            { metric: blogStats.topicsCount, label: "Topics Covered", desc: "Across cybersecurity domains" },
+            { metric: blogStats.readingTime, label: "Est. Total Reading Time", desc: "Minutes of published content", suffix: " min" }
           ].map((stat, idx) => (
             <div key={idx} className="p-5 rounded-2xl bg-paper-node border border-border-ink shadow-sm text-center node-theme-experiment hover:scale-102 transition-transform duration-300">
               <span className="text-2xl md:text-3xl font-serif font-bold text-accent block leading-none">
@@ -1397,7 +1418,7 @@ export default function Page() {
         </div>
 
         {/* Featured Article Section */}
-        {portfolioConfig.blogs.filter(b => b.isFeatured && !b.comingSoon && (selectedBlogCategory === "All" || b.category === selectedBlogCategory) && (blogSearchQuery === "" || b.title.toLowerCase().includes(blogSearchQuery.toLowerCase()) || b.description.toLowerCase().includes(blogSearchQuery.toLowerCase()) || b.topics.some(t => t.toLowerCase().includes(blogSearchQuery.toLowerCase())))).map((blog) => (
+        {filteredBlogs.filter(b => b.isFeatured).map((blog) => (
           <div key={blog.id} className="mb-12 border border-accent/30 bg-paper-node rounded-2xl p-6 md:p-8 shadow-[0_0_20px_var(--color-accent-glow)] ring-1 ring-accent/15">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Featured Cover Image */}
@@ -1478,147 +1499,125 @@ export default function Page() {
           </div>
         ))}
 
-        {/* Search and Filters Controller */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-t border-b border-border-ink/20 py-6 mb-8 bg-paper-node/15 px-4 rounded-2xl">
-          {/* Category Filter Tabs */}
-          <div className="flex flex-wrap gap-1.5 max-w-2xl">
-            {["All", "Cybersecurity", "AI Security", "Application Security", "Threat Intelligence", "Malware Analysis", "Cloud Security", "Career"].map((cat) => {
-              const isSelected = selectedBlogCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedBlogCategory(cat)}
-                  aria-label={`Filter by ${cat}`}
-                  className={`text-[9px] font-mono px-3 py-1.5 rounded-full transition-all duration-200 border cursor-pointer ${
-                    isSelected
-                      ? "text-accent bg-accent/5 border-accent/25 font-bold shadow-sm"
-                      : "text-ink-muted border-border-ink/15 bg-paper/30 hover:border-accent/40 hover:text-ink"
-                  }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
+        {/* Search and Filters Controller & Grid for non-featured articles */}
+        {(publishedBlogs.some(b => !b.isFeatured) || blogSearchQuery !== "" || selectedBlogCategory !== "All") && (
+          <>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-t border-b border-border-ink/20 py-6 mb-8 bg-paper-node/15 px-4 rounded-2xl">
+              {/* Category Filter Tabs */}
+              <div className="flex flex-wrap gap-1.5 max-w-2xl">
+                {availableBlogCategories.map((cat) => {
+                  const isSelected = selectedBlogCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedBlogCategory(cat)}
+                      aria-label={`Filter by ${cat}`}
+                      className={`text-[9px] font-mono px-3 py-1.5 rounded-full transition-all duration-200 border cursor-pointer ${
+                        isSelected
+                          ? "text-accent bg-accent/5 border-accent/25 font-bold shadow-sm"
+                          : "text-ink-muted border-border-ink/15 bg-paper/30 hover:border-accent/40 hover:text-ink"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
 
-          {/* Text Search Input */}
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted/50" />
-            <input
-              type="text"
-              placeholder="Search threat reports..."
-              aria-label="Search articles"
-              value={blogSearchQuery}
-              onChange={(e) => setBlogSearchQuery(e.target.value)}
-              className="w-full bg-paper border border-border-ink/80 focus:border-accent pl-9 pr-4 py-2.5 rounded-full text-xs font-sans text-ink outline-none transition-colors"
-            />
-          </div>
-        </div>
+              {/* Text Search Input */}
+              <div className="relative w-full md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted/50" />
+                <input
+                  type="text"
+                  placeholder="Search threat reports..."
+                  aria-label="Search articles"
+                  value={blogSearchQuery}
+                  onChange={(e) => setBlogSearchQuery(e.target.value)}
+                  className="w-full bg-paper border border-border-ink/80 focus:border-accent pl-9 pr-4 py-2.5 rounded-full text-xs font-sans text-ink outline-none transition-colors"
+                />
+              </div>
+            </div>
 
-        {/* Blog Post List (Filtered Grid) */}
-        {filteredBlogs.length === 0 ? (
-          <div className="h-64 flex flex-col items-center justify-center text-center py-12">
-            <Terminal className="w-10 h-10 text-ink-muted/50 mb-3 animate-pulse" />
-            <h3 className="font-serif text-lg font-bold text-ink mb-1">No Decrypted Telemetry</h3>
-            <p className="text-[10px] font-mono text-ink-muted uppercase max-w-xs">
-              Search query did not yield matches in the current dossier logs.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredBlogs.map((blog) => {
-              if (blog.isFeatured && !blog.comingSoon) return null; // Featured article is already rendered above in its full block
-
-              return (
-                <article
-                  key={blog.id}
-                  className={`border border-border-ink bg-paper-node rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 select-none ${
-                    blog.comingSoon
-                      ? "opacity-60 grayscale-[40%] node-theme-career"
-                      : "hover:border-accent hover:scale-[1.01] hover:shadow-[0_0_15px_var(--color-accent-glow)] node-theme-skill"
-                  }`}
-                >
-                  <div>
-                    {/* Header category and coming soon */}
-                    <div className="flex justify-between items-center text-[8px] font-mono tracking-widest uppercase font-semibold border-b border-border-ink/30 pb-2 mb-3">
-                      <span className="text-ink-muted">{blog.category}</span>
-                      {blog.comingSoon ? (
-                        <span className="text-accent animate-pulse font-bold px-1.5 py-0.5 rounded bg-accent/5 border border-accent/25">
-                          Coming Soon
-                        </span>
-                      ) : (
+            {/* Blog Post List (Filtered Grid) */}
+            {filteredBlogs.filter(b => !b.isFeatured).length === 0 ? (
+              <div className="h-64 flex flex-col items-center justify-center text-center py-12">
+                <Terminal className="w-10 h-10 text-ink-muted/50 mb-3 animate-pulse" />
+                <h3 className="font-serif text-lg font-bold text-ink mb-1">No Decrypted Telemetry</h3>
+                <p className="text-[10px] font-mono text-ink-muted uppercase max-w-xs">
+                  Search query did not yield matches in the current dossier logs.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredBlogs.filter(b => !b.isFeatured).map((blog) => (
+                  <article
+                    key={blog.id}
+                    className="border border-border-ink bg-paper-node rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 select-none hover:border-accent hover:scale-[1.01] hover:shadow-[0_0_15px_var(--color-accent-glow)] node-theme-skill"
+                  >
+                    <div>
+                      <div className="flex justify-between items-center text-[8px] font-mono tracking-widest uppercase font-semibold border-b border-border-ink/30 pb-2 mb-3">
+                        <span className="text-ink-muted">{blog.category}</span>
                         <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                      )}
-                    </div>
+                      </div>
 
-                    <h4 className="font-serif text-sm font-bold text-ink leading-tight mb-2 min-h-[38px] group-hover:text-accent">
-                      {blog.title}
-                    </h4>
+                      <h4 className="font-serif text-sm font-bold text-ink leading-tight mb-2 min-h-[38px] group-hover:text-accent">
+                        {blog.title}
+                      </h4>
 
-                    {/* Metadata dates */}
-                    <div className="flex items-center gap-3 text-[8px] font-mono text-ink-muted uppercase mb-3">
-                      <span className="flex items-center gap-0.5">
-                        <Calendar className="w-2.5 h-2.5" />
-                        {blog.publishedDate}
-                      </span>
-                      <span className="flex items-center gap-0.5">
-                        <Clock className="w-2.5 h-2.5" />
-                        {blog.readingTime}
-                      </span>
-                    </div>
-
-                    <p className="font-sans text-[11px] text-ink-muted leading-relaxed mb-4 text-justify min-h-[66px]">
-                      {blog.description}
-                    </p>
-                  </div>
-
-                  <div>
-                    {/* Topics tags */}
-                    <div className="flex flex-wrap gap-1 mb-4 border-t border-border-ink/20 pt-3">
-                      {blog.topics.map((topic, tIdx) => (
-                        <span key={tIdx} className="bg-paper border border-border-ink/30 px-1.5 py-0.5 rounded text-[8px] font-mono text-ink-muted">
-                          {topic}
+                      <div className="flex items-center gap-3 text-[8px] font-mono text-ink-muted uppercase mb-3">
+                        <span className="flex items-center gap-0.5">
+                          <Calendar className="w-2.5 h-2.5" />
+                          {blog.publishedDate}
                         </span>
-                      ))}
+                        <span className="flex items-center gap-0.5">
+                          <Clock className="w-2.5 h-2.5" />
+                          {blog.readingTime}
+                        </span>
+                      </div>
+
+                      <p className="font-sans text-[11px] text-ink-muted leading-relaxed mb-4 text-justify min-h-[66px]">
+                        {blog.description}
+                      </p>
                     </div>
 
-                    {/* Read Action Button */}
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={blog.readUrl}
-                        aria-label={`Read ${blog.title}`}
-                        onClick={(e) => {
-                          if (blog.comingSoon) {
-                            e.preventDefault();
-                          } else {
-                            playAudioTick(1200, 0.05);
-                          }
-                        }}
-                        className={`flex-1 text-center py-2 rounded-lg text-[9px] font-mono cursor-pointer transition-colors ${
-                          blog.comingSoon
-                            ? "bg-border-ink/20 text-ink-muted/50 border border-border-ink/20 cursor-not-allowed"
-                            : "bg-ink text-paper hover:bg-accent border border-transparent"
-                        }`}
-                      >
-                        {blog.comingSoon ? "Telemetry Pending" : "Decrypt Article"}
-                      </a>
-                      {blog.githubUrl && blog.githubUrl !== "#" && !blog.comingSoon && (
+                    <div>
+                      <div className="flex flex-wrap gap-1 mb-4 border-t border-border-ink/20 pt-3">
+                        {blog.topics.map((topic, tIdx) => (
+                          <span key={tIdx} className="bg-paper border border-border-ink/30 px-1.5 py-0.5 rounded text-[8px] font-mono text-ink-muted">
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center gap-2">
                         <a
-                          href={blog.githubUrl}
+                          href={blog.readUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="p-1.5 border border-border-ink hover:border-accent hover:text-accent rounded-lg bg-paper cursor-pointer transition-colors"
-                          title="View Source on GitHub"
+                          aria-label={`Read ${blog.title}`}
+                          onClick={() => playAudioTick(1200, 0.05)}
+                          className="flex-1 text-center py-2 rounded-lg text-[9px] font-mono cursor-pointer transition-colors bg-ink text-paper hover:bg-accent border border-transparent"
                         >
-                          <Github className="w-3.5 h-3.5" />
+                          Decrypt Article
                         </a>
-                      )}
+                        {blog.githubUrl && blog.githubUrl !== "#" && (
+                          <a
+                            href={blog.githubUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="p-1.5 border border-border-ink hover:border-accent hover:text-accent rounded-lg bg-paper cursor-pointer transition-colors"
+                            title="View Source on GitHub"
+                          >
+                            <Github className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </section>
 
