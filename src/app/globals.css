@@ -1,6 +1,17 @@
 @import "tailwindcss";
 
 :root {
+  --bg-primary: #FAF8F2;
+  --bg-secondary: #F2EFE6;
+  --surface: rgba(242, 239, 230, 0.85);
+  --surface-hover: rgba(235, 232, 222, 0.95);
+  --border: rgba(12, 12, 11, 0.18);
+  --text-primary: #0C0C0B;
+  --text-secondary: #48453D;
+  --accent-primary: #B94A24;
+  --accent-secondary: #B94A24;
+  --success: #B94A24;
+
   --color-paper: #FAF8F2;
   --color-paper-node: #F2EFE6;
   --color-ink: #0C0C0B;
@@ -11,20 +22,47 @@
   --color-edge: rgba(12, 12, 11, 0.18);
   --color-accent-glow: rgba(185, 74, 36, 0.15);
   
+  /* Semantic domain colors (light mode) */
+  --domain-se: #B94A24;
+  --domain-ai: #B94A24;
+  --domain-security: #B94A24;
+  --domain-cloud: #B94A24;
+  --domain-research: #B94A24;
+  --domain-error: #B91C1C;
+  
   --font-serif: var(--font-serif, Playfair Display, serif);
   --font-sans: var(--font-sans, Plus Jakarta Sans, sans-serif);
 }
 
 .dark {
+  --bg-primary: #121211;
+  --bg-secondary: #1A1A18;
+  --surface: rgba(26, 26, 24, 0.85);
+  --surface-hover: rgba(35, 35, 32, 0.95);
+  --border: rgba(255, 255, 255, 0.14);
+  --text-primary: #FFFFFF;
+  --text-secondary: #E2DFD6;
+  --accent-primary: #F97316;
+  --accent-secondary: #F97316;
+  --success: #F97316;
+
   --color-paper: #121211;
-  --color-paper-node: #1D1D1B;
+  --color-paper-node: #1A1A18;
   --color-ink: #FFFFFF;
-  --color-ink-muted: #D8D5CC;
-  --color-accent: #E26E4A;
-  --color-accent-hover: #F28C68;
-  --color-border-ink: rgba(255, 255, 255, 0.22);
-  --color-edge: rgba(255, 255, 255, 0.15);
-  --color-accent-glow: rgba(226, 110, 74, 0.22);
+  --color-ink-muted: #E2DFD6;
+  --color-accent: #F97316;
+  --color-accent-hover: #FB923C;
+  --color-border-ink: rgba(255, 255, 255, 0.14);
+  --color-edge: rgba(255, 255, 255, 0.12);
+  --color-accent-glow: rgba(249, 115, 22, 0.18);
+  
+  /* Semantic domain colors (dark mode - exclusively Burnt Technical Orange) */
+  --domain-se: #F97316;
+  --domain-ai: #F97316;
+  --domain-security: #F97316;
+  --domain-cloud: #F97316;
+  --domain-research: #F97316;
+  --domain-error: #F87171;
 }
 
 @theme {

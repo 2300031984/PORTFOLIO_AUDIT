@@ -32,9 +32,11 @@ import CognitiveScan from "@/components/ui/CognitiveScan";
 import ProjectDetailDrawer from "@/components/ui/ProjectDetailDrawer";
 
 import {
+  Activity,
+  Calendar,
+  Clock,
   ExternalLink,
   Award,
-  Terminal,
   Volume2,
   VolumeX,
   BookOpen,
@@ -49,10 +51,32 @@ import {
   ArrowRight,
   CheckCircle,
   CheckCircle2,
-  Copy
+  Copy,
+  ChevronDown,
+  ChevronUp,
+  User
 } from "lucide-react";
 
-// Register all custom mind-map node types
+// Unified Domain Color Helper locked strictly to Burnt Technical Orange (#F97316 / #E26E4A)
+function getDomainStyle(category: string) {
+  const cat = (category || "").toLowerCase();
+  let domainName = "Software Engineering";
+  if (cat.includes("ai") || cat.includes("ml") || cat.includes("agent") || cat.includes("deepfake")) domainName = "AI & Agentic Systems";
+  else if (cat.includes("cloud") || cat.includes("devops") || cat.includes("aws") || cat.includes("docker")) domainName = "Cloud & DevOps";
+  else if (cat.includes("research") || cat.includes("experiment") || cat.includes("lab") || cat.includes("academic") || cat.includes("leadership")) domainName = "Research / Labs";
+  else if (cat.includes("security") || cat.includes("pentest") || cat.includes("forensics") || cat.includes("malware") || cat.includes("threat") || cat.includes("appsec") || cat.includes("wireshark") || cat.includes("network")) domainName = "Cybersecurity & AppSec";
+
+  return {
+    text: "text-accent",
+    border: "border-accent/30",
+    bg: "bg-[#181816]/80",
+    badge: "border border-accent/30 text-accent bg-[#181816]/80 backdrop-blur-sm",
+    glow: "hover:border-accent/50 hover:bg-[#1C1C19] transition-all",
+    domainName
+  };
+}
+
+// Custom mind-map node types
 const nodeTypes = {
   central: CentralNode,
   category: CategoryBranchNode,
@@ -86,7 +110,6 @@ function MemoryMapEmbed({
   handlePaneClick: () => void;
   className?: string;
 }) {
-  // Generate nodes and edges dynamically based on portfolio config and selection state
   const { nodes, edges } = useMemo(() => {
     const listNodes: Node[] = [
       {
@@ -106,7 +129,7 @@ function MemoryMapEmbed({
 
     const listEdges: Edge[] = [];
 
-    // 7 Major Category Branch Nodes surrounding Central Node
+    // 7 Category Branch Nodes
     const categoryBranches: {
       id: string;
       title: string;
@@ -234,7 +257,6 @@ function MemoryMapEmbed({
         className: isDimmed ? "dimmed" : isActive ? "active animate-pulse-glow" : "",
       });
 
-      // Sequential journey nodes if expanded
       if (isExpanded) {
         const journeyKeys: ("question" | "learning" | "experiment" | "challenge" | "solution" | "impact")[] = [
           "question",
@@ -422,7 +444,7 @@ function MemoryMapEmbed({
   }, [nodes, edges, setRfNodes, setRfEdges]);
 
   return (
-    <div className={className || "w-full h-[650px] border border-border-ink rounded-2xl relative overflow-hidden bg-paper-node/30 shadow-inner"}>
+    <div className={className || "w-full h-[540px] border border-border-ink rounded-xl relative overflow-hidden bg-paper-node/30 shadow-inner"}>
       <ReactFlow
         nodes={rfNodes}
         edges={rfEdges}
@@ -431,7 +453,7 @@ function MemoryMapEmbed({
         onPaneClick={handlePaneClick}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.15, minZoom: 0.3, maxZoom: 1.2 }}
+        fitViewOptions={{ padding: 0.12, minZoom: 0.3, maxZoom: 1.2 }}
         minZoom={0.2}
         maxZoom={1.5}
         zoomOnScroll={false}
@@ -441,7 +463,7 @@ function MemoryMapEmbed({
       >
         <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="var(--color-edge)" />
       </ReactFlow>
-      <div className="absolute bottom-4 right-4 z-10 scale-90">
+      <div className="absolute bottom-3 right-3 z-10 scale-85">
         <GraphControls />
       </div>
     </div>
@@ -459,6 +481,8 @@ export default function Page() {
   const [selectedDrawerProject, setSelectedDrawerProject] = useState<Project | null>(null);
   const [emailCopied, setEmailCopied] = useState(false);
   const [activeSection, setActiveSection] = useState("hero-section");
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [showAllExperiments, setShowAllExperiments] = useState(false);
 
   // Audio feedback state
   const [soundEnabled, setSoundEnabled] = useState(false);
@@ -514,19 +538,22 @@ export default function Page() {
     const sections = [
       "hero-section",
       "map-section",
+      "patterns-section",
       "buildlog-section",
       "projects-section",
+      "casestudies-section",
       "experiments-section",
       "proof-section",
       "skills-section",
       "about-section",
       "blogs-section",
+      "explore-section",
       "contact-section"
     ];
 
     const observerOptions = {
       root: null,
-      rootMargin: "-25% 0px -55% 0px",
+      rootMargin: "-20% 0px -50% 0px",
       threshold: 0.05,
     };
 
@@ -582,6 +609,9 @@ export default function Page() {
       const isSelecting = prev !== skillId;
       if (isSelecting) {
         playAudioTick(880, 0.05, "sine");
+        setTimeout(() => {
+          document.getElementById("projects-section")?.scrollIntoView({ behavior: "smooth" });
+        }, 150);
       } else {
         playAudioTick(587.33, 0.04, "sine");
       }
@@ -609,19 +639,33 @@ export default function Page() {
     return (portfolioConfig.blogs || []).filter((blog) => !blog.comingSoon);
   }, []);
 
+  const visibleProjects = useMemo(() => {
+    let list = portfolioConfig.projects;
+    if (selectedSkill) {
+      const skillCluster = portfolioConfig.skills.find(s => s.id === selectedSkill);
+      if (skillCluster && skillCluster.relatedProjects.length > 0) {
+        list = list.filter(p => skillCluster.relatedProjects.includes(p.id));
+      }
+    }
+    if (!showAllProjects && !selectedSkill) {
+      return list.slice(0, 6);
+    }
+    return list;
+  }, [showAllProjects, selectedSkill]);
+
   if (!mounted) {
     return (
       <div className="w-screen h-screen flex flex-col items-center justify-center bg-paper text-ink paper-texture select-none">
         <div className="flex flex-col items-center text-center max-w-sm px-4">
-          <span className="text-accent font-serif italic text-lg mb-1 animate-pulse">
+          <span className="text-accent font-serif italic text-sm mb-1 animate-pulse">
             Decrypting System Mind Map
           </span>
-          <h1 className="font-serif text-4xl md:text-5xl font-light tracking-tight text-ink mb-3">
+          <h1 className="font-serif text-3xl md:text-4xl font-light tracking-tight text-ink mb-2">
             {portfolioConfig.developer.name}
           </h1>
-          <div className="text-ink-muted font-serif italic text-sm space-y-1 opacity-80">
+          <div className="text-ink-muted font-serif italic text-xs space-y-1 opacity-80">
             <p>&quot;Every system leaves traces. Every trace tells a story.&quot;</p>
-            <p>&quot;A map of the systems I&apos;ve built, studied, secured, and explored.&quot;</p>
+            <p>&quot;My work begins where patterns emerge.&quot;</p>
           </div>
         </div>
       </div>
@@ -629,15 +673,15 @@ export default function Page() {
   }
 
   return (
-    <div className="relative min-h-screen bg-paper text-ink paper-texture font-sans selection:bg-accent/20">
+    <div className="relative min-h-screen bg-paper text-ink paper-texture font-sans selection:bg-accent/20 text-[14px]">
       {/* Decorative watercolor background */}
       <div className="watercolor-bg" />
 
       {/* Top System Status Bar */}
-      <div className="w-full bg-paper-node/90 border-b border-border-ink/40 py-1.5 px-4 text-[10px] font-mono flex items-center justify-between text-ink-muted relative z-50">
-        <div className="flex items-center gap-3">
+      <div className="w-full bg-paper-node/90 border-b border-border-ink/40 py-1 px-4 text-[10px] font-mono flex items-center justify-between text-ink-muted relative z-50">
+        <div className="flex items-center gap-2.5">
           <span className="inline-flex items-center gap-1.5 text-accent font-bold">
-            <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
             SYSTEM {portfolioConfig.systemStatus.status}
           </span>
           <span className="hidden sm:inline text-border-ink">|</span>
@@ -646,7 +690,7 @@ export default function Page() {
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <span className="hidden md:inline italic text-ink-muted">
             BUILDING: {portfolioConfig.systemStatus.currentlyBuilding}
           </span>
@@ -657,17 +701,20 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Dynamic Navigation bar */}
-      <nav className="sticky top-0 z-40 flex items-center justify-between px-6 py-3.5 bg-paper/90 backdrop-blur-md border-b border-border-ink/40">
-        <div className="flex items-center gap-3">
-          <Terminal className="w-4 h-4 text-accent" />
-          <span className="text-xs font-mono tracking-widest text-ink uppercase font-bold">
-            Sai Varun // System Mind Map 2.0
+      {/* Compact Navigation bar */}
+      <nav className="sticky top-0 z-40 flex items-center justify-between px-4 md:px-6 py-2 bg-paper/90 backdrop-blur-md border-b border-border-ink/40">
+        <div className="flex items-center gap-2">
+          <span className="text-accent font-mono font-bold text-xs">&gt;_</span>
+          <span className="text-[11px] font-mono tracking-widest text-ink uppercase font-bold hidden sm:inline">
+            SAI VARUN // SYSTEM MIND MAP 2.0
+          </span>
+          <span className="text-[11px] font-mono tracking-widest text-ink uppercase font-bold sm:hidden">
+            SAI VARUN
           </span>
         </div>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden lg:flex items-center gap-1 bg-paper-node/80 border border-border-ink/50 p-1 rounded-full shadow-sm">
+        {/* Compact Navigation Links */}
+        <div className="hidden xl:flex items-center gap-0.5 bg-paper-node/80 border border-border-ink/50 p-0.5 rounded-full shadow-sm max-w-full overflow-x-auto">
           {[
             { label: "Profile", id: "hero-section" },
             { label: "Mind Map", id: "map-section" },
@@ -688,9 +735,9 @@ export default function Page() {
                   playAudioTick(783.99, 0.05);
                   document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className={`text-[10px] font-mono px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer border ${
+                className={`text-[11px] font-mono px-3 py-1 rounded-full transition-all duration-200 cursor-pointer border whitespace-nowrap ${
                   isActive
-                    ? "text-accent bg-accent/10 border-accent/30 font-semibold"
+                    ? "text-accent bg-accent/10 border-accent/40 font-semibold shadow-[0_0_10px_rgba(249,115,22,0.2)]"
                     : "text-ink-muted hover:text-ink hover:bg-paper/40 border-transparent"
                 }`}
               >
@@ -700,13 +747,13 @@ export default function Page() {
           })}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={toggleSound}
-            className="p-2 rounded-full border border-border-ink bg-paper-node hover:border-accent hover:text-accent text-ink cursor-pointer transition-colors"
-            title={soundEnabled ? "Mute interface feedback" : "Unmute interface feedback"}
+            className="p-1.5 rounded-full border border-border-ink bg-paper-node hover:border-accent hover:text-accent text-ink cursor-pointer transition-colors"
+            title={soundEnabled ? "Mute audio feedback" : "Unmute audio feedback"}
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4 text-accent" /> : <VolumeX className="w-4 h-4 text-ink-muted" />}
+            {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-accent" /> : <VolumeX className="w-3.5 h-3.5 text-ink-muted" />}
           </button>
 
           <button
@@ -714,42 +761,53 @@ export default function Page() {
               playAudioTick(880, 0.05);
               setCognitiveScanActive(true);
             }}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-all cursor-pointer text-xs font-mono font-semibold"
+            className="flex items-center gap-1 px-3 py-1 rounded-full border border-accent/50 bg-accent/10 text-accent hover:bg-accent/20 transition-all cursor-pointer text-[11px] font-mono font-semibold"
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            Cognitive Scan
+            <Sparkles className="w-3 h-3" />
+            <span className="hidden sm:inline">Cognitive Scan</span>
           </button>
 
           <ThemeToggle />
         </div>
       </nav>
 
-      {/* HERO SECTION */}
-      <section id="hero-section" className="relative pt-12 pb-16 px-6 md:px-12 max-w-7xl mx-auto flex flex-col items-center text-center">
+      {/* 1. HERO SECTION (FULL VIEWPORT HEIGHT COVERAGE) */}
+      <section id="hero-section" className="relative min-h-[calc(100vh-80px)] py-8 px-4 md:px-6 max-w-[1100px] mx-auto flex flex-col items-center justify-center text-center">
         <ParticleCanvas />
 
-        <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border-ink bg-paper-node/80 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
-            <span className="text-xs font-mono tracking-widest text-ink uppercase font-semibold">
-              Computer Science Engineer &bull; Software &bull; AI &bull; Security &bull; Cloud
-            </span>
+        <div className="relative z-10 w-full space-y-6">
+          {/* Top Eyebrow Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-accent/40 bg-paper-node/90 shadow-sm transition-all hover:border-accent/70">
+              <Activity className="w-3.5 h-3.5 text-accent" />
+              <span className="text-[11px] font-mono tracking-widest text-accent uppercase font-bold">
+                SECURE SYSTEMS ARCHITECT
+              </span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-border-ink bg-paper-node/80 shadow-sm">
+              <span className="text-[11px] font-mono tracking-widest text-ink uppercase font-semibold">
+                COMPUTER SCIENCE ENGINEER &bull; SOFTWARE &bull; AI &bull; SECURITY &bull; CLOUD
+              </span>
+            </div>
           </div>
 
-          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-ink">
-            {portfolioConfig.developer.name}
+          {/* Main Headline Name (Prominent Single-Line / Responsive Layout) */}
+          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] text-center select-none">
+            Chintala Sai Varun
           </h1>
 
-          <div className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto">
+          {/* Specialization Badges Row */}
+          <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
             {portfolioConfig.developer.specializations.map((spec, idx) => (
-              <span key={idx} className="text-xs font-mono px-3 py-1 rounded-md border border-border-ink/60 bg-paper-node/60 text-accent font-semibold">
+              <span key={idx} className="text-xs font-mono px-3 py-1.5 rounded-md border border-accent/30 bg-[#181816]/80 text-accent font-semibold shadow-sm backdrop-blur-sm">
                 {spec}
               </span>
             ))}
           </div>
 
-          <div className="p-6 rounded-2xl border border-border-ink/60 bg-paper-node/40 backdrop-blur-md shadow-sm max-w-xl mx-auto space-y-2">
-            <p className="font-serif italic text-base md:text-lg text-ink">
+          {/* Quote Container */}
+          <div className="p-4 rounded-xl border border-border-ink/60 bg-paper-node/40 backdrop-blur-md shadow-sm max-w-xl mx-auto space-y-1 text-center">
+            <p className="font-serif italic text-base md:text-lg text-white font-semibold">
               &quot;Every system leaves traces. Every trace tells a story.&quot;
             </p>
             <p className="font-serif italic text-xs md:text-sm text-ink-muted">
@@ -757,38 +815,38 @@ export default function Page() {
             </p>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto pt-2">
-            <div className="p-3 rounded-xl border border-border-ink/40 bg-paper-node/40">
-              <span className="text-xl font-serif font-bold text-accent block">9.56</span>
-              <span className="text-[10px] font-mono text-ink-muted uppercase">Academic CGPA</span>
+          {/* Quick Metrics Bar (4 horizontal cards with Orange numbers) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl mx-auto">
+            <div className="p-3 rounded-xl border border-border-ink/50 bg-paper-node/40 hover:border-accent/50 transition-colors text-center">
+              <span className="text-2xl font-serif font-bold text-accent block">9.56</span>
+              <span className="text-[9px] font-mono text-ink-muted uppercase font-semibold">ACADEMIC CGPA</span>
             </div>
-            <div className="p-3 rounded-xl border border-border-ink/40 bg-paper-node/40">
-              <span className="text-xl font-serif font-bold text-accent block">981/1000</span>
-              <span className="text-[10px] font-mono text-ink-muted uppercase">AWS Certified</span>
+            <div className="p-3 rounded-xl border border-border-ink/50 bg-paper-node/40 hover:border-accent/50 transition-colors text-center">
+              <span className="text-2xl font-serif font-bold text-accent block">981/1000</span>
+              <span className="text-[9px] font-mono text-ink-muted uppercase font-semibold">AWS CERTIFIED</span>
             </div>
-            <div className="p-3 rounded-xl border border-border-ink/40 bg-paper-node/40">
-              <span className="text-xl font-serif font-bold text-accent block">100+</span>
-              <span className="text-[10px] font-mono text-ink-muted uppercase">THM Security Labs</span>
+            <div className="p-3 rounded-xl border border-border-ink/50 bg-paper-node/40 hover:border-accent/50 transition-colors text-center">
+              <span className="text-2xl font-serif font-bold text-accent block">100+</span>
+              <span className="text-[9px] font-mono text-ink-muted uppercase font-semibold">THM SECURITY LABS</span>
             </div>
-            <div className="p-3 rounded-xl border border-border-ink/40 bg-paper-node/40">
-              <span className="text-xl font-serif font-bold text-accent block">400+</span>
-              <span className="text-[10px] font-mono text-ink-muted uppercase">DSA Challenges</span>
+            <div className="p-3 rounded-xl border border-border-ink/50 bg-paper-node/40 hover:border-accent/50 transition-colors text-center">
+              <span className="text-2xl font-serif font-bold text-accent block">400+</span>
+              <span className="text-[9px] font-mono text-ink-muted uppercase font-semibold">DSA CHALLENGES</span>
             </div>
           </div>
 
           {/* Action CTA Buttons */}
-          <div className="flex flex-wrap justify-center items-center gap-4 pt-4">
+          <div className="flex flex-wrap justify-center items-center gap-3 pt-1">
             <button
               onClick={() => document.getElementById("map-section")?.scrollIntoView({ behavior: "smooth" })}
-              className="px-6 py-3 rounded-full bg-ink text-paper hover:bg-accent font-serif text-sm transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer"
+              className="px-6 py-2.5 rounded-full bg-white text-black font-sans font-semibold text-xs transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer hover:bg-white/90"
             >
               Explore Interactive Mind Map
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => document.getElementById("projects-section")?.scrollIntoView({ behavior: "smooth" })}
-              className="px-6 py-3 rounded-full border border-border-ink bg-paper-node hover:border-accent text-ink font-serif text-sm transition-all duration-300 cursor-pointer"
+              className="px-6 py-2.5 rounded-full border border-border-ink bg-paper-node/80 hover:border-accent text-white font-sans text-xs font-semibold transition-all duration-300 cursor-pointer"
             >
               View Projects &amp; Architecture
             </button>
@@ -796,22 +854,22 @@ export default function Page() {
         </div>
       </section>
 
-      {/* CENTRAL INTERACTIVE MIND MAP SECTION */}
-      <section id="map-section" className="py-12 px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 border-b border-border-ink/40 pb-4">
+      {/* 2. INTERACTIVE COGNITIVE MIND MAP 2.0 */}
+      <section id="map-section" className="py-6 px-4 md:px-6 max-w-[1100px] mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-3 gap-2 border-b border-border-ink/40 pb-2.5">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Layers className="w-4 h-4 text-accent" />
-              <span className="text-xs font-mono tracking-widest text-accent uppercase font-bold">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <Layers className="w-3.5 h-3.5 text-accent" />
+              <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold">
                 Navigation &amp; System Architecture Layer
               </span>
             </div>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-ink">
+            <h2 className="font-serif text-2xl md:text-[30px] font-bold text-ink leading-tight">
               Interactive Cognitive Mind Map 2.0
             </h2>
           </div>
-          <p className="font-sans text-xs md:text-sm text-ink-muted max-w-md">
-            The mind-map serves as the primary navigation. Click branch nodes to explore domains, click project nodes to decrypt complete technical dossiers, or recenter with graph controls.
+          <p className="font-sans text-xs text-ink-muted max-w-sm">
+            Central identity: <strong className="text-ink">CHINTALA SAI VARUN</strong>. Click branch nodes to focus domains, click project hubs to open full technical dossiers.
           </p>
         </div>
 
@@ -825,309 +883,480 @@ export default function Page() {
             handleSelectSkill={handleSelectSkill}
             handleSelectProjectForDrawer={handleSelectProjectForDrawer}
             handlePaneClick={handlePaneClick}
-            className="w-full h-[680px] border border-border-ink rounded-3xl relative overflow-hidden bg-paper-node/30 shadow-lg"
+            className="w-full h-[540px] border border-border-ink rounded-xl relative overflow-hidden bg-paper-node/30 shadow-md"
           />
         </ReactFlowProvider>
       </section>
 
-      {/* BUILD LOG SECTION */}
-      <section id="buildlog-section" className="py-16 px-6 md:px-12 max-w-7xl mx-auto border-t border-border-ink/40">
-        <div className="flex items-center gap-2 mb-2">
-          <History className="w-5 h-5 text-accent" />
-          <span className="text-xs font-mono tracking-widest text-accent uppercase font-bold">
-            Chronological Work Timeline
+      {/* 3. PATTERNS REVEAL THE SYSTEM (EXACT REFERENCE DESIGN) */}
+      <section id="patterns-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column: Subject Profile */}
+          <div className="lg:col-span-5 space-y-3">
+            <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold block">
+              SECTION 02 // SUBJECT PROFILE
+            </span>
+
+            <h2 className="font-serif text-2xl md:text-[32px] font-bold text-white leading-[1.15]">
+              Patterns reveal the<br />system.
+            </h2>
+
+            <div className="space-y-2.5 font-sans text-[12px] text-ink-muted leading-relaxed">
+              <p className="text-white font-medium">
+                I am a Computer Science undergraduate focused on building secure, scalable, and intelligent software systems.
+              </p>
+
+              <p>
+                My work spans backend engineering, cybersecurity, cloud technologies, and AI-driven security solutions. I enjoy analyzing how systems behave under pressure, identifying hidden vulnerabilities, and designing architectures that remain reliable, secure, and efficient.
+              </p>
+
+              <p>
+                Through hands-on experience with Spring Boot, REST APIs, database optimization, malware analysis, network traffic investigation, and cloud platforms, I have developed a strong foundation in both software engineering and security research.
+              </p>
+
+              <p>
+                My goal is to build next-generation intelligent systems that not only solve problems but also understand, monitor, and defend themselves against evolving threats.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column: Subject Development Timeline Card */}
+          <div className="lg:col-span-7">
+            <div className="p-5 rounded-xl border border-border-ink/70 bg-paper-node/50 shadow-sm relative space-y-4">
+              <div className="flex items-center justify-between border-b border-border-ink/40 pb-2.5">
+                <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold">
+                  SUBJECT DEVELOPMENT TIMELINE
+                </span>
+                <User className="w-4 h-4 text-ink-muted/50" />
+              </div>
+
+              {/* Connected Timeline list */}
+              <div className="relative pl-5 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-border-ink/60">
+                <div className="relative space-y-0.5">
+                  <span className="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-accent ring-4 ring-paper-node" />
+                  <span className="text-[10px] font-mono font-bold text-accent">2023</span>
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-white leading-tight">Engineering Foundations</h3>
+                  <p className="font-sans text-[11px] text-ink-muted leading-relaxed">
+                    Started Computer Science Engineering with a focus on programming, algorithms, databases, operating systems, and computer networks.
+                  </p>
+                </div>
+
+                <div className="relative space-y-0.5">
+                  <span className="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-accent ring-4 ring-paper-node" />
+                  <span className="text-[10px] font-mono font-bold text-accent">2024</span>
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-white leading-tight">Backend Engineering Internship</h3>
+                  <p className="font-sans text-[11px] text-ink-muted leading-relaxed">
+                    Developed Spring Boot applications, designed REST APIs, implemented JWT authentication, optimized databases, and worked on secure backend systems during my Full Stack Development.
+                  </p>
+                </div>
+
+                <div className="relative space-y-0.5">
+                  <span className="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-accent ring-4 ring-paper-node" />
+                  <span className="text-[10px] font-mono font-bold text-accent">2025</span>
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-white leading-tight">Security Exploration &amp; Problem Solving</h3>
+                  <p className="font-sans text-[11px] text-ink-muted leading-relaxed">
+                    Completed 100+ TryHackMe labs, strengthened cybersecurity fundamentals, and solved 400+ algorithmic problems across coding platforms.
+                  </p>
+                </div>
+
+                <div className="relative space-y-0.5">
+                  <span className="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-accent ring-4 ring-paper-node animate-pulse" />
+                  <span className="text-[10px] font-mono font-bold text-accent">2026</span>
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-white leading-tight">Intelligent Secure Systems</h3>
+                  <p className="font-sans text-[11px] text-ink-muted leading-relaxed">
+                    Exploring AI-powered security, threat detection, intelligent monitoring platforms to build secure and adaptive software systems.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. BUILD LOG */}
+      <section id="buildlog-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40">
+        <div className="flex items-center gap-1.5 mb-1">
+          <History className="w-3.5 h-3.5 text-accent" />
+          <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold">
+            Chronological Timeline
           </span>
         </div>
-        <h2 className="font-serif text-3xl md:text-5xl font-bold text-ink mb-4">
+        <h2 className="font-serif text-2xl md:text-[30px] font-bold text-ink mb-1">
           Build Log
         </h2>
-        <p className="font-sans text-sm text-ink-muted max-w-2xl mb-10">
+        <p className="font-sans text-xs text-ink-muted max-w-xl mb-5 leading-relaxed">
           A year-by-year chronicle of engineered systems, security assessments, AI agent implementations, and foundational milestones.
         </p>
 
-        <div className="space-y-12">
+        <div className="space-y-4">
           {portfolioConfig.buildLog.map((yearLog: BuildLogYear) => (
-            <div key={yearLog.year} className="p-6 md:p-8 rounded-3xl border border-border-ink bg-paper-node/40 space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-border-ink/40 pb-4">
-                <div className="flex items-center gap-3">
-                  <span className="font-serif text-3xl md:text-4xl font-bold text-accent">
+            <div key={yearLog.year} className="p-4 rounded-xl border border-border-ink bg-paper-node/40 space-y-3">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 border-b border-border-ink/40 pb-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-serif text-2xl font-bold text-accent">
                     {yearLog.year}
                   </span>
-                  <span className="text-xs font-mono px-3 py-1 rounded-full border border-border-ink bg-paper-node font-semibold">
-                    {yearLog.items.length} Major Milestones
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-border-ink bg-paper-node font-semibold">
+                    {yearLog.items.length} Milestones
                   </span>
                 </div>
-                <p className="font-serif italic text-xs md:text-sm text-ink-muted">
+                <p className="font-serif italic text-xs text-ink-muted">
                   {yearLog.summary}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {yearLog.items.map((item) => (
-                  <div key={item.id} className="p-5 rounded-2xl border border-border-ink/60 bg-paper/60 space-y-3 hover:border-accent transition-colors">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-accent font-bold uppercase">{item.category}</span>
-                      <span className="text-ink-muted">{item.period}</span>
-                    </div>
-
-                    <h3 className="font-serif text-lg font-bold text-ink leading-tight">
-                      {item.title}
-                    </h3>
-
-                    <p className="font-sans text-xs text-ink-muted leading-relaxed">
-                      {item.description}
-                    </p>
-
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border-ink/30">
-                      <div className="flex flex-wrap gap-1.5">
-                        {item.tech.map((t, idx) => (
-                          <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded border border-border-ink/40 bg-paper-node text-ink-muted">
-                            {t}
-                          </span>
-                        ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {yearLog.items.map((item) => {
+                  const dStyle = getDomainStyle(item.category);
+                  return (
+                    <div key={item.id} className={`p-3.5 rounded-lg border border-border-ink/60 bg-paper/60 space-y-1.5 transition-colors ${dStyle.glow}`}>
+                      <div className="flex items-center justify-between text-[10px] font-mono">
+                        <span className={`${dStyle.text} font-bold uppercase`}>{item.category}</span>
+                        <span className="text-ink-muted">{item.period}</span>
                       </div>
-                      {item.link && (
-                        <a
-                          href={item.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] font-mono text-accent hover:underline inline-flex items-center gap-1 font-bold"
-                        >
-                          View <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
+
+                      <h3 className="font-serif text-[15px] font-bold text-ink leading-tight">
+                        {item.title}
+                      </h3>
+
+                      <p className="font-sans text-[12px] text-ink-muted leading-relaxed line-clamp-2">
+                        {item.description}
+                      </p>
+
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border-ink/30">
+                        <div className="flex flex-wrap gap-1">
+                          {item.tech.map((t, idx) => (
+                            <span key={idx} className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-border-ink/40 bg-paper-node text-ink-muted">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`text-[9px] font-mono ${dStyle.text} hover:underline inline-flex items-center gap-0.5 font-bold`}
+                          >
+                            View <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* PROJECTS SECTION */}
-      <section id="projects-section" className="py-16 px-6 md:px-12 max-w-7xl mx-auto border-t border-border-ink/40">
-        <div className="flex items-center gap-2 mb-2">
-          <Code2 className="w-5 h-5 text-accent" />
-          <span className="text-xs font-mono tracking-widest text-accent uppercase font-bold">
-            Architectures &amp; Technical Systems
+      {/* 5. FEATURED ENGINEERING WORKS */}
+      <section id="projects-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40">
+        <div className="flex items-center gap-1.5 mb-1">
+          <Code2 className="w-3.5 h-3.5 text-accent" />
+          <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold">
+            Architectures &amp; Systems
           </span>
         </div>
-        <h2 className="font-serif text-3xl md:text-5xl font-bold text-ink mb-4">
-          Featured Engineering Works
-        </h2>
-        <p className="font-sans text-sm text-ink-muted max-w-2xl mb-10">
-          Click any project card to open its technical dossier complete with system architecture flow diagrams, security controls, and journey milestones.
-        </p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-3 gap-2">
+          <div>
+            <h2 className="font-serif text-2xl md:text-[30px] font-bold text-ink leading-tight">
+              Featured Engineering Works
+            </h2>
+            <p className="font-sans text-xs text-ink-muted max-w-xl mt-0.5 leading-relaxed">
+              Click any project card to open its technical dossier complete with system architecture flow diagrams, security controls, and journey milestones.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {portfolioConfig.projects.map((proj: Project) => (
-            <div
-              key={proj.id}
-              onClick={() => handleSelectProjectForDrawer(proj)}
-              className="p-6 rounded-3xl border border-border-ink bg-paper-node/50 hover:border-accent cursor-pointer transition-all duration-300 flex flex-col justify-between group shadow-sm hover:shadow-md"
+          {selectedSkill && (
+            <button
+              onClick={() => setSelectedSkill(null)}
+              className="text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-accent text-accent hover:bg-accent/10 transition-colors flex items-center gap-1 self-start cursor-pointer"
             >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-full border border-accent/30 bg-accent/10 text-accent font-bold">
-                    {proj.category}
-                  </span>
-                  <span className="text-[10px] font-mono text-ink-muted group-hover:text-accent transition-colors">
-                    Click to Open Dossier &rarr;
-                  </span>
-                </div>
-
-                <h3 className="font-serif text-xl font-bold text-ink leading-tight group-hover:text-accent transition-colors">
-                  {proj.title}
-                </h3>
-
-                <p className="font-sans text-xs text-ink-muted leading-relaxed line-clamp-3">
-                  {proj.tagline}
-                </p>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-border-ink/40 space-y-3">
-                <div className="flex flex-wrap gap-1.5">
-                  {proj.techStack.slice(0, 4).map((tech, idx) => (
-                    <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded border border-border-ink/40 bg-paper text-ink-muted">
-                      {tech}
-                    </span>
-                  ))}
-                  {proj.techStack.length > 4 && (
-                    <span className="text-[10px] font-mono text-accent">+{proj.techStack.length - 4}</span>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between text-xs font-mono text-accent font-bold pt-1">
-                  <span>View Architecture Flow</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </div>
-          ))}
+              Clear Filter ({selectedSkill}) &times;
+            </button>
+          )}
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
+          {visibleProjects.map((proj: Project) => {
+            const dStyle = getDomainStyle(proj.category);
+            return (
+              <div
+                key={proj.id}
+                onClick={() => handleSelectProjectForDrawer(proj)}
+                className={`p-3.5 rounded-xl border border-border-ink bg-paper-node/50 cursor-pointer transition-all duration-300 flex flex-col justify-between group shadow-sm ${dStyle.glow}`}
+              >
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full border ${dStyle.badge} font-bold`}>
+                      {proj.category}
+                    </span>
+                    <span className="text-[9px] font-mono text-ink-muted group-hover:text-accent transition-colors">
+                      Dossier &rarr;
+                    </span>
+                  </div>
+
+                  <h3 className="font-serif text-[15px] font-bold text-ink leading-tight group-hover:text-accent transition-colors">
+                    {proj.title}
+                  </h3>
+
+                  <p className="font-sans text-[12px] text-ink-muted leading-relaxed line-clamp-2">
+                    {proj.tagline}
+                  </p>
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-border-ink/40 space-y-1.5">
+                  <div className="flex flex-wrap gap-1">
+                    {proj.techStack.slice(0, 4).map((tech, idx) => (
+                      <span key={idx} className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-border-ink/40 bg-paper text-ink-muted">
+                        {tech}
+                      </span>
+                    ))}
+                    {proj.techStack.length > 4 && (
+                      <span className={`text-[9px] font-mono ${dStyle.text}`}>+{proj.techStack.length - 4}</span>
+                    )}
+                  </div>
+
+                  <div className={`flex items-center justify-between text-[10px] font-mono ${dStyle.text} font-bold pt-0.5`}>
+                    <span>View Architecture Flow</span>
+                    <ArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* View All / Toggle Projects Button */}
+        {portfolioConfig.projects.length > 6 && !selectedSkill && (
+          <div className="mt-5 text-center">
+            <button
+              onClick={() => {
+                playAudioTick(783.99, 0.05);
+                setShowAllProjects(prev => !prev);
+              }}
+              className="px-4.5 py-1.5 rounded-full border border-border-ink bg-paper-node hover:border-accent text-ink font-mono text-[11px] font-semibold transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
+            >
+              {showAllProjects ? (
+                <>Show Top 6 Strongest Works <ChevronUp className="w-3.5 h-3.5 text-accent" /></>
+              ) : (
+                <>Explore All {portfolioConfig.projects.length} Works &amp; Blueprints <ChevronDown className="w-3.5 h-3.5 text-accent" /></>
+              )}
+            </button>
+          </div>
+        )}
       </section>
 
-      {/* EXPERIMENTS & RESEARCH LABS SECTION */}
-      <section id="experiments-section" className="py-16 px-6 md:px-12 max-w-7xl mx-auto border-t border-border-ink/40">
-        <div className="flex items-center gap-2 mb-2">
-          <Compass className="w-5 h-5 text-accent animate-spin" style={{ animationDuration: "12s" }} />
-          <span className="text-xs font-mono tracking-widest text-accent uppercase font-bold">
+
+
+      {/* 7. EXPERIMENTS & TECHNICAL LABS */}
+      <section id="experiments-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40">
+        <div className="flex items-center gap-1.5 mb-1">
+          <Compass className="w-3.5 h-3.5 text-accent animate-spin" style={{ animationDuration: "12s" }} />
+          <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold">
             Active Research &amp; Prototyping
           </span>
         </div>
-        <h2 className="font-serif text-3xl md:text-5xl font-bold text-ink mb-4">
+        <h2 className="font-serif text-2xl md:text-[30px] font-bold text-ink mb-1">
           Experiments &amp; Technical Labs
         </h2>
-        <p className="font-sans text-sm text-ink-muted max-w-2xl mb-10">
-          Targeted technical investigations into AI agent swarms, vector RAG retrieval optimization, container security, honeypots, and stateful ledger systems.
+        <p className="font-sans text-xs text-ink-muted max-w-2xl mb-5 leading-relaxed">
+          Technical investigations across AI security, application security, threat intelligence, digital forensics, network analysis, cloud security, and security automation.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {portfolioConfig.experiments.map((exp: CurrentExperiment) => (
-            <div key={exp.id} className="p-6 rounded-3xl border border-border-ink bg-paper-node/50 space-y-4 shadow-sm hover:border-accent transition-colors">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono tracking-widest uppercase font-bold text-accent">
-                  {exp.category}
-                </span>
-                <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          {(showAllExperiments ? portfolioConfig.experiments : portfolioConfig.experiments.slice(0, 6)).map((exp: CurrentExperiment) => {
+            return (
+              <div key={exp.id} className="p-4 rounded-xl border border-border-ink/70 bg-paper-node/40 backdrop-blur-sm space-y-2.5 shadow-sm hover:border-accent/40 transition-all duration-300 flex flex-col justify-between h-full">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-mono tracking-wider uppercase font-bold text-accent px-2 py-0.5 rounded border border-accent/30 bg-[#181816]/80">
+                      {exp.category}
+                    </span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                  </div>
 
-              <h3 className="font-serif text-lg font-bold text-ink leading-tight">
-                {exp.title}
-              </h3>
+                  <h3 className="font-serif text-sm font-bold text-white leading-snug">
+                    {exp.title}
+                  </h3>
+                </div>
 
-              <div className="space-y-2 text-xs font-sans text-ink leading-relaxed">
-                <div>
-                  <span className="text-[9px] font-mono text-accent uppercase block font-bold">Research Question</span>
-                  <p className="font-serif italic text-xs text-ink">&quot;{exp.researchQuestion}&quot;</p>
-                </div>
-                <div>
-                  <span className="text-[9px] font-mono text-ink-muted uppercase block font-bold">Current Progress</span>
-                  <p className="text-ink-muted text-xs">{exp.progress}</p>
-                </div>
-                <div>
-                  <span className="text-[9px] font-mono text-ink-muted uppercase block font-bold">Future Direction</span>
-                  <p className="text-ink-muted text-xs">{exp.futureDirection}</p>
+                <div className="space-y-2 text-xs font-sans text-ink leading-relaxed pt-1">
+                  <div>
+                    <span className="text-[8px] font-mono text-accent uppercase font-bold block mb-0.5">Research Question</span>
+                    <p className="font-serif italic text-[11px] text-ink-muted leading-relaxed">&quot;{exp.researchQuestion}&quot;</p>
+                  </div>
+                  <div>
+                    <span className="text-[8px] font-mono text-ink-muted uppercase font-bold block mb-0.5">Current Progress</span>
+                    <p className="font-sans text-[11px] text-ink leading-relaxed">&quot;{exp.progress}&quot;</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
+
+        {portfolioConfig.experiments.length > 6 && (
+          <div className="flex justify-center pt-6">
+            <button
+              onClick={() => {
+                playAudioTick(783.99, 0.05);
+                setShowAllExperiments((prev) => !prev);
+              }}
+              className="px-5 py-2 rounded-full border border-border-ink bg-paper-node/80 hover:border-accent text-ink font-mono text-xs font-semibold transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-sm"
+            >
+              {showAllExperiments ? (
+                <>
+                  Show Fewer Experiments <ChevronUp className="w-3.5 h-3.5 text-accent" />
+                </>
+              ) : (
+                <>
+                  Explore All {portfolioConfig.experiments.length} Experiments &amp; Labs <ChevronDown className="w-3.5 h-3.5 text-accent" />
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </section>
 
-      {/* PROOF OF WORK & VERIFIED CREDENTIALS SECTION */}
-      <section id="proof-section" className="py-16 px-6 md:px-12 max-w-7xl mx-auto border-t border-border-ink/40">
-        <div className="flex items-center gap-2 mb-2">
-          <Award className="w-5 h-5 text-accent" />
-          <span className="text-xs font-mono tracking-widest text-accent uppercase font-bold">
-            Verified Credentials &amp; Accomplishments
+      {/* 8. PROOF OF WORK */}
+      <section id="proof-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40">
+        <div className="flex items-center gap-1.5 mb-1">
+          <Award className="w-3.5 h-3.5 text-accent" />
+          <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold">
+            Verified Credentials &amp; Evidence
           </span>
         </div>
-        <h2 className="font-serif text-3xl md:text-5xl font-bold text-ink mb-4">
+        <h2 className="font-serif text-2xl md:text-[30px] font-bold text-ink mb-1">
           Proof of Work
         </h2>
-        <p className="font-sans text-sm text-ink-muted max-w-2xl mb-10">
-          Strictly verified technical certifications, practical security labs, competitive programming metrics, and academic leadership.
+        <p className="font-sans text-xs text-ink-muted max-w-xl mb-5 leading-relaxed">
+          Strictly verified technical certifications, practical security labs, algorithmic metrics, and academic leadership. Real values only.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {portfolioConfig.proof.map((item: ProofItem) => (
-            <div key={item.id} className="p-5 rounded-2xl border border-border-ink bg-paper-node/50 space-y-3 flex flex-col justify-between hover:border-accent transition-colors">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-accent uppercase px-2 py-0.5 rounded bg-accent/10">
-                    {item.category}
-                  </span>
-                  {item.verificationLink && (
-                    <a
-                      href={item.verificationLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-ink-muted hover:text-accent transition-colors"
-                      title="Verify Credential"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {portfolioConfig.proof.map((item: ProofItem) => {
+            const dStyle = getDomainStyle(item.category);
+            return (
+              <div key={item.id} className={`p-3 rounded-lg border border-border-ink bg-paper-node/50 space-y-1.5 flex flex-col justify-between transition-all duration-300 ${dStyle.glow}`}>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${dStyle.badge}`}>
+                      {item.category}
+                    </span>
+                    {item.verificationLink && (
+                      <a
+                        href={item.verificationLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-ink-muted hover:text-accent transition-colors"
+                        title="Verify Credential"
+                      >
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    )}
+                  </div>
+
+                  <h3 className="font-serif text-[13px] font-bold text-ink leading-tight">
+                    {item.title}
+                  </h3>
+
+                  <p className="font-sans text-[11px] text-ink-muted leading-relaxed line-clamp-2">
+                    {item.detail}
+                  </p>
                 </div>
 
-                <h3 className="font-serif text-base font-bold text-ink leading-tight">
-                  {item.title}
-                </h3>
-
-                <p className="font-sans text-xs text-ink-muted leading-relaxed">
-                  {item.detail}
-                </p>
+                <div className="pt-1 border-t border-border-ink/30 flex items-center justify-between text-[10px] font-mono">
+                  <span className={`font-bold ${dStyle.text}`}>{item.highlight}</span>
+                  <CheckCircle2 className={`w-3 h-3 ${dStyle.text}`} />
+                </div>
               </div>
-
-              <div className="pt-2 border-t border-border-ink/30 flex items-center justify-between text-xs font-mono">
-                <span className="font-bold text-accent">{item.highlight}</span>
-                <CheckCircle2 className="w-4 h-4 text-accent" />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
-      {/* SKILLS CONSTELLATION SECTION */}
-      <section id="skills-section" className="py-16 px-6 md:px-12 max-w-7xl mx-auto border-t border-border-ink/40">
-        <div className="flex items-center gap-2 mb-2">
-          <Cpu className="w-5 h-5 text-accent" />
-          <span className="text-xs font-mono tracking-widest text-accent uppercase font-bold">
+      {/* 9. SKILLS CONSTELLATION */}
+      <section id="skills-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40">
+        <div className="flex items-center gap-1.5 mb-1">
+          <Cpu className="w-3.5 h-3.5 text-accent" />
+          <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold">
             Technical Capabilities
           </span>
         </div>
-        <h2 className="font-serif text-3xl md:text-5xl font-bold text-ink mb-4">
+        <h2 className="font-serif text-2xl md:text-[30px] font-bold text-ink mb-1">
           Skills Constellation
         </h2>
-        <p className="font-sans text-sm text-ink-muted max-w-2xl mb-10">
-          Core technical proficiencies across Software Engineering, AI &amp; Agentic Workflows, Cybersecurity, Cloud, Languages, and Systems.
+        <p className="font-sans text-xs text-ink-muted max-w-xl mb-5 leading-relaxed">
+          Core technical proficiencies categorized across Software Engineering, AI/ML, Cybersecurity, Cloud, Languages, and Systems. Click any cluster to filter works.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {portfolioConfig.skills.map((cluster) => (
-            <div key={cluster.id} className="p-6 rounded-3xl border border-border-ink bg-paper-node/50 space-y-4">
-              <h3 className="font-serif text-xl font-bold text-ink">
-                {cluster.title}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {cluster.items.map((item, idx) => (
-                  <span key={idx} className="text-xs font-mono px-3 py-1 rounded-lg border border-border-ink/60 bg-paper text-ink font-medium">
-                    {item}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          {portfolioConfig.skills.map((cluster) => {
+            const dStyle = getDomainStyle(cluster.title);
+            const isSelected = selectedSkill === cluster.id;
+            return (
+              <div
+                key={cluster.id}
+                onClick={() => handleSelectSkill(cluster.id)}
+                className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all duration-300 bg-paper-node/50 space-y-2 shadow-sm ${
+                  isSelected ? `ring-2 ring-accent border-accent ${dStyle.glow}` : `border-border-ink ${dStyle.glow}`
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-ink leading-tight">
+                    {cluster.title}
+                  </h3>
+                  <span className={`text-[8px] font-mono px-1.5 py-0.5 rounded border ${dStyle.badge}`}>
+                    {isSelected ? "Active Filter" : "Filter Works"}
                   </span>
-                ))}
+                </div>
+
+                <div className="flex flex-wrap gap-1">
+                  {cluster.items.map((item, idx) => (
+                    <span key={idx} className="text-[10px] font-mono px-1.5 py-0.5 rounded border border-border-ink/60 bg-paper text-ink font-medium">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+
+                <div className={`pt-1 border-t border-border-ink/30 text-[9px] font-mono flex items-center justify-between ${dStyle.text}`}>
+                  <span>{cluster.relatedProjects.length} Related Projects</span>
+                  <span>{isSelected ? "Click to reset" : "Click to view application &rarr;"}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
-      {/* ABOUT & EXPERIENCE SECTION */}
-      <section id="about-section" className="py-16 px-6 md:px-12 max-w-7xl mx-auto border-t border-border-ink/40">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      {/* 10. EDUCATION / PROFESSIONAL RECORD */}
+      <section id="about-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Internship */}
-          <div className="p-8 rounded-3xl border border-border-ink bg-paper-node/40 space-y-6">
-            <div className="flex items-center gap-2 text-accent text-xs font-mono font-bold uppercase">
-              <Briefcase className="w-4 h-4 text-accent" />
+          <div className="p-4 rounded-xl border border-border-ink bg-paper-node/40 space-y-3 hover:border-accent/40 transition-colors">
+            <div className="flex items-center gap-1.5 text-accent text-[10px] font-mono font-bold uppercase">
+              <Briefcase className="w-3.5 h-3.5 text-accent" />
               Professional Internship
             </div>
             <div>
-              <h3 className="font-serif text-2xl font-bold text-ink">
+              <h3 className="font-serif text-base font-bold text-ink">
                 {portfolioConfig.internship.role}
               </h3>
-              <p className="font-serif italic text-sm text-ink-muted mt-1">
+              <p className="font-serif italic text-xs text-ink-muted mt-0.5">
                 {portfolioConfig.internship.company} &bull; {portfolioConfig.internship.duration}
               </p>
             </div>
-            <ul className="space-y-2.5 text-xs md:text-sm text-ink-muted font-sans list-disc pl-4 leading-relaxed">
+            <ul className="space-y-1 text-xs text-ink-muted font-sans list-disc pl-4 leading-relaxed">
               {portfolioConfig.internship.highlights.map((h, idx) => (
                 <li key={idx}>{h}</li>
               ))}
             </ul>
-            <div className="flex flex-wrap gap-2 pt-2">
+            <div className="flex flex-wrap gap-1 pt-1">
               {portfolioConfig.internship.techStack.map((tech, idx) => (
-                <span key={idx} className="text-[10px] font-mono px-2.5 py-1 rounded border border-border-ink bg-paper text-ink">
+                <span key={idx} className="text-[9px] font-mono px-2 py-0.5 rounded border border-border-ink bg-paper text-ink">
                   {tech}
                 </span>
               ))}
@@ -1135,23 +1364,23 @@ export default function Page() {
           </div>
 
           {/* Education */}
-          <div className="p-8 rounded-3xl border border-border-ink bg-paper-node/40 space-y-6">
-            <div className="flex items-center gap-2 text-accent text-xs font-mono font-bold uppercase">
-              <GraduationCap className="w-4 h-4 text-accent" />
-              Academic Credentials
+          <div className="p-4 rounded-xl border border-border-ink bg-paper-node/40 space-y-3 hover:border-accent/40 transition-colors">
+            <div className="flex items-center gap-1.5 text-accent text-[10px] font-mono font-bold uppercase">
+              <GraduationCap className="w-3.5 h-3.5 text-accent" />
+              Academic Record
             </div>
             <div>
-              <h3 className="font-serif text-2xl font-bold text-ink">
+              <h3 className="font-serif text-base font-bold text-ink">
                 {portfolioConfig.education.degree} in {portfolioConfig.education.major}
               </h3>
-              <p className="font-serif italic text-sm text-ink-muted mt-1">
+              <p className="font-serif italic text-xs text-ink-muted mt-0.5">
                 {portfolioConfig.education.institution} &bull; {portfolioConfig.education.duration}
               </p>
-              <div className="inline-block mt-2 px-3 py-1 rounded-full border border-accent/40 bg-accent/10 text-accent font-mono text-xs font-bold">
+              <div className="inline-block mt-1 px-2 py-0.5 rounded-full border border-accent/40 bg-accent/10 text-accent font-mono text-[10px] font-bold">
                 CGPA: {portfolioConfig.education.cgpa}
               </div>
             </div>
-            <ul className="space-y-2.5 text-xs md:text-sm text-ink-muted font-sans list-disc pl-4 leading-relaxed">
+            <ul className="space-y-1 text-xs text-ink-muted font-sans list-disc pl-4 leading-relaxed">
               {portfolioConfig.education.highlights.map((h, idx) => (
                 <li key={idx}>{h}</li>
               ))}
@@ -1160,67 +1389,132 @@ export default function Page() {
         </div>
       </section>
 
-      {/* BLOGS & PUBLICATIONS SECTION */}
-      <section id="blogs-section" className="py-16 px-6 md:px-12 max-w-7xl mx-auto border-t border-border-ink/40">
-        <div className="flex items-center gap-2 mb-2">
-          <BookOpen className="w-5 h-5 text-accent" />
-          <span className="text-xs font-mono tracking-widest text-accent uppercase font-bold">
-            Publications &amp; Technical Insights
-          </span>
+      {/* 11. TECHNICAL BLOGS */}
+      <section id="blogs-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40 space-y-6">
+        <div>
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-ink mb-1.5">
+            Technical Blogs
+          </h2>
+          <p className="font-sans text-xs md:text-sm text-ink-muted max-w-2xl leading-relaxed">
+            Sharing practical insights from cybersecurity, AI security, penetration testing, malware analysis, threat intelligence, and secure software engineering.
+          </p>
         </div>
-        <h2 className="font-serif text-3xl md:text-5xl font-bold text-ink mb-4">
-          Security &amp; Technical Research Articles
-        </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-          {publishedBlogs.map((blog) => (
-            <div key={blog.id} className="p-6 rounded-3xl border border-border-ink bg-paper-node/50 space-y-4">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-accent font-bold uppercase">{blog.category}</span>
-                <span className="text-ink-muted">{blog.readingTime}</span>
+        {/* Top 3 Stat Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className="p-4 rounded-xl border border-border-ink bg-paper-node/50 text-center shadow-sm space-y-1">
+            <span className="text-3xl md:text-4xl font-serif font-bold text-accent block">1</span>
+            <span className="text-[10px] font-mono tracking-widest text-ink font-bold uppercase block">ARTICLES PUBLISHED</span>
+            <span className="text-[9px] font-mono text-ink-muted uppercase block">ACTIVE DOSSIERS ONLINE</span>
+          </div>
+          <div className="p-4 rounded-xl border border-border-ink bg-paper-node/50 text-center shadow-sm space-y-1">
+            <span className="text-3xl md:text-4xl font-serif font-bold text-accent block">7</span>
+            <span className="text-[10px] font-mono tracking-widest text-ink font-bold uppercase block">TOPICS COVERED</span>
+            <span className="text-[9px] font-mono text-ink-muted uppercase block">ACROSS CYBERSECURITY DOMAINS</span>
+          </div>
+          <div className="p-4 rounded-xl border border-border-ink bg-paper-node/50 text-center shadow-sm space-y-1">
+            <span className="text-3xl md:text-4xl font-serif font-bold text-accent block">8 min</span>
+            <span className="text-[10px] font-mono tracking-widest text-ink font-bold uppercase block">EST. TOTAL READING TIME</span>
+            <span className="text-[9px] font-mono text-ink-muted uppercase block">MINUTES OF PUBLISHED CONTENT</span>
+          </div>
+        </div>
+
+        {/* Featured Article Card */}
+        {publishedBlogs.map((blog) => (
+          <div key={blog.id} className="p-5 md:p-6 rounded-2xl border border-border-ink/80 bg-paper-node/40 backdrop-blur-md shadow-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              {/* Left Image Thumbnail */}
+              <div className="lg:col-span-5 relative rounded-xl overflow-hidden shadow-md aspect-[4/3] border border-border-ink/60 bg-paper-node">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={blog.imageUrl || "/tryhackme_blog_thumbnail.png"}
+                  alt={blog.title}
+                  className="w-full h-full object-cover object-center"
+                />
+                <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+                  <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full border border-accent/40 bg-accent/30 text-accent font-bold uppercase backdrop-blur-md">
+                    FEATURED
+                  </span>
+                  <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full border border-white/30 bg-black/60 text-white font-bold uppercase backdrop-blur-md">
+                    {blog.category.toUpperCase()}
+                  </span>
+                </div>
               </div>
-              <h3 className="font-serif text-xl font-bold text-ink">
-                {blog.title}
-              </h3>
-              <p className="font-sans text-xs text-ink-muted leading-relaxed">
-                {blog.description}
-              </p>
-              <div className="pt-2 flex items-center justify-between">
-                <a
-                  href={blog.readUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-full border border-ink bg-ink text-paper hover:bg-accent font-mono text-xs transition-colors inline-flex items-center gap-1.5"
-                >
-                  Read Article <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+
+              {/* Right Article Details */}
+              <div className="lg:col-span-7 space-y-3.5">
+                <div className="flex items-center gap-2.5 text-[10px] font-mono text-accent uppercase font-bold tracking-wider">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-accent" />
+                    {blog.publishedDate.toUpperCase()}
+                  </span>
+                  <span>&bull;</span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-accent" />
+                    {blog.readingTime.toUpperCase()}
+                  </span>
+                </div>
+
+                <h3 className="font-serif text-2xl md:text-3xl font-bold text-white leading-tight">
+                  {blog.title}
+                </h3>
+
+                <p className="font-sans text-xs md:text-sm text-ink-muted leading-relaxed">
+                  {blog.description}
+                </p>
+
+                {/* Topic Badges */}
+                {blog.topics && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {blog.topics.map((t, idx) => (
+                      <span key={idx} className="text-[10px] font-mono px-2.5 py-0.5 rounded border border-accent/30 bg-[#181816]/80 text-ink font-medium">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Read Action Button */}
+                <div className="pt-2">
+                  <a
+                    href={blog.readUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 rounded-full bg-white text-black font-sans font-semibold text-xs transition-all duration-300 hover:bg-white/90 shadow-md inline-flex items-center gap-2 cursor-pointer"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    Read Article
+                  </a>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </section>
 
-      {/* CONTACT & TERMINAL SECTION */}
-      <section id="contact-section" className="py-16 px-6 md:px-12 max-w-7xl mx-auto border-t border-border-ink/40">
-        <div className="p-8 md:p-12 rounded-3xl border border-border-ink bg-paper-node/60 max-w-4xl mx-auto space-y-8 text-center">
+
+
+      {/* 13. CONTACT */}
+      <section id="contact-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40">
+        <div className="p-5 md:p-6 rounded-xl border border-border-ink bg-paper-node/60 max-w-lg mx-auto space-y-4 text-center shadow-sm">
           <div>
-            <span className="text-xs font-mono tracking-widest text-accent uppercase font-bold block mb-2">
+            <span className="text-[10px] font-mono tracking-widest text-accent uppercase font-bold block mb-0.5">
               Communications Terminal
             </span>
-            <h2 className="font-serif text-3xl md:text-5xl font-bold text-ink">
+            <h2 className="font-serif text-2xl font-bold text-ink">
               Connect with Sai Varun
             </h2>
-            <p className="font-serif italic text-sm text-ink-muted mt-2 max-w-lg mx-auto">
+            <p className="font-serif italic text-xs text-ink-muted mt-0.5 max-w-xs mx-auto">
               Open to Software Engineering, AI Systems, AppSec, and Cloud Architecture roles.
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-4">
+          <div className="flex flex-wrap justify-center items-center gap-2.5">
             <button
               onClick={handleCopyEmail}
-              className="px-6 py-3 rounded-full border border-ink bg-ink text-paper hover:bg-accent font-mono text-xs transition-colors flex items-center gap-2 cursor-pointer shadow-md"
+              className="px-4.5 py-2 rounded-full border border-ink bg-ink text-paper hover:bg-accent font-mono text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
-              {emailCopied ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {emailCopied ? <CheckCircle className="w-3.5 h-3.5 text-accent" /> : <Copy className="w-3.5 h-3.5" />}
               {emailCopied ? "Email Copied!" : portfolioConfig.developer.email}
             </button>
 
@@ -1228,7 +1522,7 @@ export default function Page() {
               href={portfolioConfig.developer.linkedinUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-full border border-border-ink bg-paper-node hover:border-accent text-ink font-mono text-xs transition-colors"
+              className="px-4.5 py-2 rounded-full border border-border-ink bg-paper-node hover:border-accent text-ink font-mono text-xs transition-colors"
             >
               LinkedIn Profile
             </a>
@@ -1237,7 +1531,7 @@ export default function Page() {
               href={portfolioConfig.developer.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-full border border-border-ink bg-paper-node hover:border-accent text-ink font-mono text-xs transition-colors"
+              className="px-4.5 py-2 rounded-full border border-border-ink bg-paper-node hover:border-accent text-ink font-mono text-xs transition-colors"
             >
               GitHub Repositories
             </a>
@@ -1245,8 +1539,8 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 border-t border-border-ink/40 text-center text-xs font-mono text-ink-muted">
+      {/* Compact Footer */}
+      <footer className="py-3 border-t border-border-ink/40 text-center text-[10px] font-mono text-ink-muted">
         <p>&copy; 2026 Chintala Sai Varun. All systems verified and active.</p>
       </footer>
 

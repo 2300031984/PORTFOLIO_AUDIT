@@ -25,11 +25,20 @@ export default function CategoryBranchNode({ data }: { data: CategoryBranchNodeD
     }
   };
 
+  const getDomainColors = () => {
+    return {
+      text: "text-accent",
+      selectedBorder: "border-accent ring-2 ring-accent/30 shadow-[0_0_15px_var(--color-accent-glow)]",
+      hoverBorder: "hover:border-accent"
+    };
+  };
+
   const Icon = getIcon();
+  const domainColors = getDomainColors();
 
   const borderClass = data.isSelected
-    ? "border-accent ring-2 ring-accent/30 shadow-[0_0_15px_var(--color-accent-glow)] scale-105"
-    : "border-border-ink hover:border-accent hover:scale-102";
+    ? `${domainColors.selectedBorder} scale-105`
+    : `border-border-ink ${domainColors.hoverBorder} hover:scale-102`;
 
   return (
     <div className="relative group transition-all duration-300">
@@ -47,13 +56,13 @@ export default function CategoryBranchNode({ data }: { data: CategoryBranchNodeD
       >
         <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-1.5">
-            <Icon className={`w-4 h-4 ${data.isSelected ? "text-accent" : "text-ink"}`} />
+            <Icon className={`w-4 h-4 ${data.isSelected ? domainColors.text : "text-ink"}`} />
             <span className="text-[10px] font-mono tracking-widest text-ink-muted uppercase font-bold">
               Branch Node
             </span>
           </div>
           {data.count !== undefined && (
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent/10 text-accent font-semibold">
+            <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded bg-paper text-ink font-semibold border ${domainColors.text}`}>
               {data.count}
             </span>
           )}
@@ -67,9 +76,9 @@ export default function CategoryBranchNode({ data }: { data: CategoryBranchNodeD
           {data.subtext}
         </p>
 
-        <div className="mt-2.5 flex items-center justify-between pt-1.5 border-t border-border-ink/40 text-[9px] font-mono text-accent">
+        <div className={`mt-2.5 flex items-center justify-between pt-1.5 border-t border-border-ink/40 text-[9px] font-mono ${domainColors.text}`}>
           <span>{data.isSelected ? "Active Focus" : "Click to Explore"}</span>
-          <span className={`w-1.5 h-1.5 rounded-full ${data.isSelected ? "bg-accent animate-ping" : "bg-ink/30"}`} />
+          <span className={`w-1.5 h-1.5 rounded-full ${data.isSelected ? `bg-current animate-ping` : "bg-ink/30"}`} />
         </div>
       </div>
     </div>

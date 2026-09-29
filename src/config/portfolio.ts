@@ -649,58 +649,112 @@ export const portfolioConfig: PortfolioConfig = {
   ],
   experiments: [
     {
-      id: "ai-agents",
-      title: "AI Agents & Autonomous Workflows",
-      category: "AI / ML",
-      researchQuestion: "Can multi-agent swarms automate dynamic security incident isolation without prompt injection risks?",
-      progress: "Prototyped localized router agent selecting specialized sub-agents for log analysis and playbooks.",
-      challenges: "Ensuring zero prompt injection drift in tool command executions.",
-      futureDirection: "Integrating local WebGPU LLMs for isolated agent decision clusters."
+      id: "exp-1",
+      title: "AI Threat Intelligence & SOC Automation",
+      category: "AI / Cybersecurity",
+      researchQuestion: "Can AI-assisted threat intelligence improve vulnerability triage and SOC automation?",
+      progress: "Built a multi-tenant SOC platform integrating NVD, CISA KEV, EPSS, MITRE ATT&CK and AI-assisted analysis through automated workflows.",
+      challenges: "Ensuring reliable correlation across disparate vulnerability feeds without false positives.",
+      futureDirection: "Expanding automated playbook triggers for real-time threat response."
     },
     {
-      id: "rag-systems",
+      id: "exp-2",
       title: "Contextual RAG & Vector Search",
       category: "AI / ML",
-      researchQuestion: "Can RAG networks extract contextual CVE vulnerabilities accurately without cross-tenant data leak?",
-      progress: "Indexed historical vulnerability databases inside local ChromaDB vector collections.",
+      researchQuestion: "Can retrieval-augmented generation improve contextual security analysis while maintaining source-grounded responses?",
+      progress: "Implemented contextual retrieval using LangChain and ChromaDB for security-oriented document and data retrieval.",
       challenges: "Minimizing retrieval latency and context window pollution.",
       futureDirection: "Integrating dense hybrid embeddings with semantic SQL query filters."
     },
     {
-      id: "api-security-labs",
-      title: "API Security & Access Delegation",
+      id: "exp-3",
+      title: "API Security & Access Control",
       category: "Cybersecurity",
-      researchQuestion: "How can we enforce fine-grained access control on REST APIs while maintaining zero-trust session validation?",
-      progress: "Built custom JWT claims verification and rate limiting interceptors in Spring Security & FastAPI.",
-      challenges: "Handling token invalidation across distributed microservice nodes.",
-      futureDirection: "Implementing OAuth2 / OIDC state validation with distributed Redis caches."
+      researchQuestion: "How can API authorization weaknesses be systematically identified during security testing?",
+      progress: "Tested REST APIs for authentication, authorization, IDOR, mass assignment, JWT handling and HTTP method manipulation.",
+      challenges: "Detecting fine-grained privilege escalation flaws across complex endpoint routes.",
+      futureDirection: "Automating OAS/Swagger schema diffing for shadow API detection."
     },
     {
-      id: "cloud-security",
-      title: "Cloud Security & Serverless Audits",
-      category: "Cloud / DevOps",
-      researchQuestion: "Can serverless functions automate identity credential audits dynamically upon policy changes?",
-      progress: "Deployed auditing AWS Lambda scripts reacting to IAM permission modifications.",
-      challenges: "Managing policy complexity in cross-account AWS cloud environments.",
-      futureDirection: "Synthesizing automated policy validation using AWS CloudTrail & EventBridge."
+      id: "exp-4",
+      title: "HASHING — File Integrity & Forensics",
+      category: "Digital Forensics / Cybersecurity",
+      researchQuestion: "Can cryptographic hashing provide a verifiable integrity chain for continuously changing evidence?",
+      progress: "Developed HASHLENS around chunk fingerprinting, cryptographic hashing and tamper-evident integrity verification.",
+      challenges: "Mitigating performance overhead during real-time multi-algorithm streaming.",
+      futureDirection: "Adding merkle tree verification for distributed file audit trails."
     },
     {
-      id: "threat-intel-automation",
-      title: "Threat Intelligence Honeypots",
+      id: "exp-5",
+      title: "OWASP Web Application Security Testing",
+      category: "Application Security",
+      researchQuestion: "Can systematic OWASP-based testing identify authorization and API weaknesses before exploitation?",
+      progress: "Performed manual security testing across authentication, IDOR, mass assignment, HTTP methods, JWT handling and security controls.",
+      challenges: "Correlating complex multi-step request sequences with OWASP WSTG test cases.",
+      futureDirection: "Building automated test harnesses for recurring web application audits."
+    },
+    {
+      id: "exp-6",
+      title: "JWT Authentication & Authorization Analysis",
+      category: "API Security",
+      researchQuestion: "How can weaknesses in token-based authentication and authorization be detected during API security testing?",
+      progress: "Analyzed JWT authentication, authorization boundaries, token handling and access-control behavior in Spring Boot REST APIs.",
+      challenges: "Preventing algorithm confusion and token expiration bypass vulnerabilities.",
+      futureDirection: "Enforcing central OAuth2 token revocation checks via distributed caches."
+    },
+    {
+      id: "exp-7",
+      title: "Network Traffic Analysis & Packet Inspection",
+      category: "Network Security",
+      researchQuestion: "Can packet-level analysis reveal suspicious communication patterns and potential security incidents?",
+      progress: "Analyzed TCP/IP, DNS and application traffic using Wireshark and hands-on network security investigations.",
+      challenges: "Parsing encrypted TLS stream metadata without deep packet inspection.",
+      futureDirection: "Automating pcap flow parsing for anomaly detection scripts."
+    },
+    {
+      id: "exp-8",
+      title: "Malware Static Analysis & PE Structures",
+      category: "Malware Analysis",
+      researchQuestion: "Can static PE analysis reveal suspicious characteristics without executing potentially malicious binaries?",
+      progress: "Performed controlled static analysis of PE structures, metadata, sections, imports and executable characteristics.",
+      challenges: "Identifying obfuscated imports and packed binary sections.",
+      futureDirection: "Integrating YARA rule matching for automated sample triage."
+    },
+    {
+      id: "exp-9",
+      title: "Threat Intelligence Correlation",
       category: "Cybersecurity",
-      researchQuestion: "Can we synthesize live honeypot anomaly patterns automatically into firewall rules?",
-      progress: "Configuring automated SSH monitors capturing malicious login inputs.",
-      challenges: "Distinguishing coordinated scans from individual script attempts.",
-      futureDirection: "Compiling behavior maps dynamically to feed active firewall rules."
+      researchQuestion: "Can multiple threat-intelligence sources produce better vulnerability prioritization than CVE data alone?",
+      progress: "Worked with NVD, CISA KEV, EPSS and MITRE ATT&CK data as part of the AI SOC platform.",
+      challenges: "Aligning heterogeneous scoring models across rapidly updating feeds.",
+      futureDirection: "Synthesizing dynamic risk scores based on live EPSS exploit probabilities."
     },
     {
-      id: "advanced-system-design",
-      title: "Stateful System Design & Hash Ledgers",
-      category: "Software Engineering",
-      researchQuestion: "How do we design stateful backends that maintain tamper-evident integrity under high concurrency?",
-      progress: "Implemented cryptographic linked-list ledgers storing previous_record_hash digests in HashLens.",
-      challenges: "Mitigating write lock contention during rapid sequential audit logging.",
-      futureDirection: "Deploying Raft consensus layers directly inside edge node ledgers."
+      id: "exp-10",
+      title: "Security Automation with n8n",
+      category: "Security Automation",
+      researchQuestion: "Can repetitive threat-intelligence collection and enrichment be transformed into a reliable automated SOC workflow?",
+      progress: "Built automated workflows connecting vulnerability feeds, enrichment sources, AI analysis and PostgreSQL storage.",
+      challenges: "Handling API rate limits and webhook error retries across automation nodes.",
+      futureDirection: "Creating self-healing workflow nodes with automated fallback paths."
+    },
+    {
+      id: "exp-11",
+      title: "Container & Docker Security",
+      category: "Cloud / DevSecOps",
+      researchQuestion: "How can container configuration and runtime behavior introduce security weaknesses into application environments?",
+      progress: "Worked with Docker-based development environments and investigated container configuration and service security.",
+      challenges: "Securing rootless container execution without breaking host resource bindings.",
+      futureDirection: "Integrating container image scanning into automated CI/CD pipelines."
+    },
+    {
+      id: "exp-12",
+      title: "Cloud IAM Security Analysis",
+      category: "Cloud Security",
+      researchQuestion: "How can excessive cloud permissions and IAM configuration weaknesses increase attack surface?",
+      progress: "Studied AWS IAM policies, permissions, identity controls and cloud security fundamentals through hands-on learning.",
+      challenges: "Tracing wildcard permission inheritance across complex multi-role policies.",
+      futureDirection: "Building least-privilege IAM policy generation scripts."
     }
   ],
   proof: [

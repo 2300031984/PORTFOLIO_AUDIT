@@ -31,7 +31,7 @@ export default function BuildLogNode({ data }: { data: BuildLogNodeData }) {
               Build Log Milestone
             </span>
           </div>
-          <span className="text-[10px] font-mono font-bold text-accent px-1.5 py-0.5 rounded bg-accent/10">
+          <span className="text-[10px] font-mono font-bold text-accent px-2 py-0.5 rounded border border-accent/30 bg-[#181816]/80">
             {data.year}
           </span>
         </div>

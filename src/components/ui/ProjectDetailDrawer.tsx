@@ -37,29 +37,24 @@ export default function ProjectDetailDrawer({ project, onClose }: ProjectDetailD
   const getStepColor = (type?: ArchitectureNode["type"]) => {
     switch (type) {
       case "input":
-        return "border-blue-500/40 bg-blue-500/10 text-blue-400";
       case "process":
-        return "border-purple-500/40 bg-purple-500/10 text-purple-400";
       case "ai":
-        return "border-emerald-500/40 bg-emerald-500/10 text-emerald-400";
       case "storage":
-        return "border-amber-500/40 bg-amber-500/10 text-amber-400";
       case "security":
-        return "border-rose-500/40 bg-rose-500/10 text-rose-400";
       case "output":
-        return "border-accent/40 bg-accent/10 text-accent";
+        return "border border-accent/30 bg-[#181816]/80 text-accent";
       default:
         return "border-border-ink bg-paper-node text-ink";
     }
   };
 
   const journeyStages = [
-    { key: "question", title: "01 // THE QUESTION", icon: HelpCircle, text: project.journey.question },
-    { key: "learning", title: "02 // THE ACQUISITION", icon: BookOpen, text: project.journey.learning },
-    { key: "experiment", title: "03 // THE PROTOTYPE", icon: FlaskConical, text: project.journey.experiment },
-    { key: "challenge", title: "04 // THE ROADBLOCK", icon: AlertTriangle, text: project.journey.challenge },
-    { key: "solution", title: "05 // THE BREAKTHROUGH", icon: Lightbulb, text: project.journey.solution },
-    { key: "impact", title: "06 // THE RESOLUTION", icon: CheckCircle2, text: project.journey.impact }
+    { key: "question", title: "01 // PROBLEM & HYPOTHESIS", icon: HelpCircle, text: project.journey.question },
+    { key: "learning", title: "02 // KNOWLEDGE ACQUISITION", icon: BookOpen, text: project.journey.learning },
+    { key: "experiment", title: "03 // PROTOTYPE & ARCHITECTURE", icon: FlaskConical, text: project.journey.experiment },
+    { key: "challenge", title: "04 // ENGINEERING ROADBLOCK", icon: AlertTriangle, text: project.journey.challenge },
+    { key: "solution", title: "05 // SECURITY & TECH SOLUTION", icon: Lightbulb, text: project.journey.solution },
+    { key: "impact", title: "06 // OUTCOME & MEASURED IMPACT", icon: CheckCircle2, text: project.journey.impact }
   ];
 
   return (
@@ -102,7 +97,7 @@ export default function ProjectDetailDrawer({ project, onClose }: ProjectDetailD
             {/* Title & Meta */}
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="text-xs font-mono px-3 py-1 rounded-full border border-accent/30 bg-accent/10 text-accent font-bold">
+                <span className="text-xs font-mono px-3 py-1 rounded-full border border-accent/30 bg-[#181816]/80 text-accent font-bold">
                   {project.category}
                 </span>
                 {project.githubUrl && (
@@ -121,7 +116,7 @@ export default function ProjectDetailDrawer({ project, onClose }: ProjectDetailD
                     href={project.reportUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1 rounded-full border border-accent/40 bg-accent/5 text-accent hover:bg-accent/10 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1 rounded-full border border-accent/30 bg-[#181816]/80 text-accent hover:border-accent/50 transition-colors"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     Audit Report PDF
