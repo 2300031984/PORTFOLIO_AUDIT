@@ -37,6 +37,7 @@ import {
   Clock,
   ExternalLink,
   Award,
+  Shield,
   Volume2,
   VolumeX,
   BookOpen,
@@ -74,6 +75,47 @@ function getDomainStyle(category: string) {
     glow: "hover:border-accent/50 hover:bg-[#1C1C19] transition-all",
     domainName
   };
+}
+
+function BlogCardThumbnail({ blog }: { blog: typeof portfolioConfig.blogs[0] }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const basePath = process.env.NODE_ENV === "production" ? "/PORTFOLIO_AUDIT" : "";
+  const rawUrl = blog.imageUrl || "/tryhackme_blog_thumbnail.png";
+  const imageSrc = rawUrl.startsWith("http") ? rawUrl : `${basePath}${rawUrl.startsWith("/") ? "" : "/"}${rawUrl}`;
+
+  return (
+    <div className="lg:col-span-5 relative rounded-xl overflow-hidden shadow-md aspect-[4/3] border border-border-ink/60 bg-[#181816] flex items-center justify-center">
+      {!imgFailed ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={imageSrc}
+          alt={blog.title}
+          onError={() => setImgFailed(true)}
+          className="w-full h-full object-cover object-center"
+        />
+      ) : (
+        <div className="w-full h-full p-6 bg-gradient-to-br from-[#FAF8F2]/10 via-[#F97316]/15 to-[#121211] flex flex-col items-center justify-center text-center relative">
+          <div className="w-14 h-14 rounded-2xl bg-accent/20 border border-accent/40 flex items-center justify-center mb-2 shadow-lg">
+            <Shield className="w-7 h-7 text-accent animate-pulse" />
+          </div>
+          <span className="font-serif text-base font-bold text-white mb-1">
+            TRYHACKME
+          </span>
+          <span className="text-[10px] font-mono text-accent uppercase font-bold tracking-widest">
+            100+ Security Labs
+          </span>
+        </div>
+      )}
+      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+        <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full border border-accent/40 bg-accent/30 text-accent font-bold uppercase backdrop-blur-md">
+          FEATURED
+        </span>
+        <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full border border-white/30 bg-black/60 text-white font-bold uppercase backdrop-blur-md">
+          {blog.category.toUpperCase()}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 // Custom mind-map node types
@@ -1389,6 +1431,7 @@ export default function Page() {
         </div>
       </section>
 
+
       {/* 11. TECHNICAL BLOGS */}
       <section id="blogs-section" className="py-8 px-4 md:px-6 max-w-[1100px] mx-auto border-t border-border-ink/40 space-y-6">
         <div>
@@ -1424,22 +1467,7 @@ export default function Page() {
           <div key={blog.id} className="p-5 md:p-6 rounded-2xl border border-border-ink/80 bg-paper-node/40 backdrop-blur-md shadow-sm">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
               {/* Left Image Thumbnail */}
-              <div className="lg:col-span-5 relative rounded-xl overflow-hidden shadow-md aspect-[4/3] border border-border-ink/60 bg-paper-node">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={blog.imageUrl || "/tryhackme_blog_thumbnail.png"}
-                  alt={blog.title}
-                  className="w-full h-full object-cover object-center"
-                />
-                <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
-                  <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full border border-accent/40 bg-accent/30 text-accent font-bold uppercase backdrop-blur-md">
-                    FEATURED
-                  </span>
-                  <span className="text-[9px] font-mono px-2.5 py-0.5 rounded-full border border-white/30 bg-black/60 text-white font-bold uppercase backdrop-blur-md">
-                    {blog.category.toUpperCase()}
-                  </span>
-                </div>
-              </div>
+              <BlogCardThumbnail blog={blog} />
 
               {/* Right Article Details */}
               <div className="lg:col-span-7 space-y-3.5">
