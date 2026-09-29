@@ -150,20 +150,16 @@ function MemoryMapEmbed({
     }
 
     // Projects (Parabolic arc above central node)
+    const totalProjects = portfolioConfig.projects.length;
     portfolioConfig.projects.forEach((proj, idx) => {
       const isExpanded = !!expandedProjects[proj.id];
       const isActive = selectedSkill ? activeProjectIds.includes(proj.id) : false;
       const isDimmed = selectedSkill ? !activeProjectIds.includes(proj.id) : false;
 
-      let px = 0;
-      let py = 0;
-      if (idx === 0) { px = -600; py = -150; }
-      else if (idx === 1) { px = -400; py = -230; }
-      else if (idx === 2) { px = -200; py = -290; }
-      else if (idx === 3) { px = 0; py = -320; }
-      else if (idx === 4) { px = 200; py = -290; }
-      else if (idx === 5) { px = 400; py = -230; }
-      else if (idx === 6) { px = 600; py = -150; }
+      const frac = totalProjects > 1 ? idx / (totalProjects - 1) : 0.5;
+      const px = Math.round(-650 + frac * 1300);
+      const normX = px / 650;
+      const py = Math.round(-330 + normX * normX * 180);
 
       listNodes.push({
         id: `proj-${proj.id}`,
@@ -201,26 +197,20 @@ function MemoryMapEmbed({
           let jx = 0;
           let jy = 0;
 
-          if (idx === 0) {
-            jx = px - 250 - jIdx * 250;
+          if (px < -350) {
+            jx = px - 180 - jIdx * 240;
             jy = py + (jIdx % 2 === 0 ? -30 : 30);
-          } else if (idx === 1) {
-            jx = px - 120 - jIdx * 250;
-            jy = py - 150 - jIdx * 50;
-          } else if (idx === 2) {
-            jx = px - 50 - jIdx * 100;
-            jy = py - 180 - jIdx * 180;
-          } else if (idx === 3) {
+          } else if (px < -100) {
+            jx = px - 100 - jIdx * 220;
+            jy = py - 140 - jIdx * 60;
+          } else if (px <= 100) {
             jx = px + (jIdx % 2 === 0 ? -80 : 80);
             jy = py - 150 - jIdx * 160;
-          } else if (idx === 4) {
-            jx = px + 50 + jIdx * 100;
-            jy = py - 180 - jIdx * 180;
-          } else if (idx === 5) {
-            jx = px + 120 + jIdx * 250;
-            jy = py - 150 - jIdx * 50;
+          } else if (px <= 350) {
+            jx = px + 100 + jIdx * 220;
+            jy = py - 140 - jIdx * 60;
           } else {
-            jx = px + 250 + jIdx * 250;
+            jx = px + 180 + jIdx * 240;
             jy = py + (jIdx % 2 === 0 ? -30 : 30);
           }
 

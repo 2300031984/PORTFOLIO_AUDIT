@@ -51,6 +51,8 @@ export default function CognitiveScan({
         onExpandProject("network-traffic-analysis", false);
         onExpandProject("ride-sharing-pentest", false);
         onExpandProject("soc-automation-platform", false);
+        onExpandProject("ai-resume-analyzer", false);
+        onExpandProject("hashlens", false);
       }
     },
     {
@@ -79,7 +81,7 @@ export default function CognitiveScan({
     },
     {
       title: "Evaluating Live Activity Stream",
-      log: ">>> PINGING CODING telemetry: GITHUB REPOSITORIES (11), LEETCODE DATA METRICS, CODECHEF CODING STATS (RATING 1426), TRYHACKME SECURE AUDITING LOGS (100+ LABS).",
+      log: ">>> PINGING CODING telemetry: GITHUB REPOSITORIES (19), LEETCODE DATA METRICS, CODECHEF CODING STATS (RATING 1426), TRYHACKME SECURE AUDITING LOGS (100+ LABS).",
       targetId: "footprint-section",
     },
     {

@@ -341,6 +341,30 @@ export const portfolioConfig: PortfolioConfig = {
         solution: "Implemented hierarchical semantic chunking combined with Gemini LLM extraction to map resume text to normalized vector embeddings.",
         impact: "Built a scalable automated screening system generating detailed ATS reports, semantic gap analyses, and personalized skill recommendations."
       }
+    },
+    {
+      id: "hashlens",
+      title: "HASHLENS — File Integrity & Hash Forensics Platform",
+      tagline: "Streaming multi-algorithm hashing, chunk fingerprinting, & tamper-evident chain ledger",
+      skills: ["security-constellation", "forensics-constellation", "backend-constellation", "programming-constellation", "core-cs-constellation"],
+      techStack: ["Python", "FastAPI", "Streamlit", "SQLite", "PostgreSQL", "Docker", "Cryptography", "REST API", "Pytest"],
+      githubUrl: "https://github.com/2300031984/HASHLENS",
+      features: [
+        "Multi-Algorithm Cryptographic Hashing: Concurrent streaming calculation of MD5, SHA-1, SHA-256, and SHA-512 for text inputs and streaming file uploads.",
+        "Chunk-Level Block Fingerprinting: Fixed-size block mapping to isolate modified byte ranges without loading entire files into memory.",
+        "Forensic 'Why Did My Hash Change?' Engine: Rule-driven 7-tier diagnostic classifier translating chunk diffs, size shifts, and header signatures into plain-language forensic assessments.",
+        "Tamper-Evident Hash Chain Ledger: Per-user cryptographic linked-list ledger maintaining append-only audit histories with active tamper detection (CHAIN_VALID vs CHAIN_BROKEN).",
+        "Certified Evidence Reports: Deterministic canonical JSON SHA-256 digest calculation (EvidenceService.compute_report_hash()) and independent verification.",
+        "REST API & Forensic Dashboard: Production FastAPI backend with interactive OpenAPI / Swagger UI documentation, Streamlit web interface, and native Python CLI."
+      ],
+      journey: {
+        question: "Why did my file's hash change, and how can we cryptographically prove file integrity changes without loading multi-gigabyte binaries into memory?",
+        learning: "Streaming cryptographic hashing, fixed-size chunk block fingerprinting, linked-list ledger digests (previous_record_hash), and canonical JSON report envelope hashing.",
+        experiment: "Engineered a local-first forensic engine combining multi-algorithm streaming hashers, fixed-size chunk maps, diagnostic diff classifiers, tamper-evident audit ledgers, FastAPI backend, and Streamlit dashboard.",
+        challenge: "Detecting minute byte-level tamper events across binary revisions efficiently while maintaining append-only tamper-evident verification.",
+        solution: "Implemented fixed-size block mapping for chunk-level diffing alongside a cryptographic linked-list ledger storing previous_record_hash digests with automated chain validation.",
+        impact: "Built a production-verified forensic platform with 70/70 passing unit tests, 25/25 live production acceptance tests, 0 known CVEs, and deterministic certified evidence reports."
+      }
     }
   ],
   skills: [
@@ -348,31 +372,31 @@ export const portfolioConfig: PortfolioConfig = {
       id: "backend-constellation",
       title: "Backend Engineering",
       items: ["Java", "Spring Boot", "FastAPI", "REST APIs", "JWT Authentication", "Spring Security", "MySQL", "PostgreSQL", "Hibernate ORM", "Microservices"],
-      relatedProjects: ["secure-ride-sharing", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer"]
+      relatedProjects: ["secure-ride-sharing", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer", "hashlens"]
     },
     {
       id: "security-constellation",
       title: "Application Security & Cybersecurity",
       items: ["OWASP Top 10", "OWASP WSTG", "Penetration Testing", "API Security", "Threat Hunting", "Incident Response", "Vulnerability Assessment", "Secure Coding", "Secure SDLC", "Authentication & Authorization", "Malware Analysis", "Digital Forensics"],
-      relatedProjects: ["malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform"]
+      relatedProjects: ["malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform", "hashlens"]
     },
     {
       id: "cloud-constellation",
       title: "Cloud & DevOps",
       items: ["AWS (EC2, S3, IAM, RDS)", "Docker", "Kubernetes (basics)", "Linux", "Git", "GitHub Actions", "CI/CD Pipelines", "Deployment Automation"],
-      relatedProjects: ["secure-ride-sharing", "network-traffic-analysis", "soc-automation-platform", "ai-resume-analyzer"]
+      relatedProjects: ["secure-ride-sharing", "network-traffic-analysis", "soc-automation-platform", "ai-resume-analyzer", "hashlens"]
     },
     {
       id: "programming-constellation",
       title: "Programming",
       items: ["Java", "Python", "SQL", "C", "Bash scripting", "Competitive Programming"],
-      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer"]
+      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer", "hashlens"]
     },
     {
       id: "core-cs-constellation",
       title: "Core Computer Science",
       items: ["Data Structures & Algorithms", "DBMS", "Operating Systems", "Computer Networks", "System Design"],
-      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer"]
+      relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer", "hashlens"]
     },
     {
       id: "ai-constellation",
@@ -449,10 +473,10 @@ export const portfolioConfig: PortfolioConfig = {
     }
   ],
   githubStats: {
-    commits: "87 contributions in the last year",
-    repos: "14",
+    commits: "169 contributions in the last year",
+    repos: "19",
     primaryTech: "Java / Python / JS / TS",
-    contributions: "87 Contributions"
+    contributions: "169 Contributions"
   },
   blogs: [
     {
