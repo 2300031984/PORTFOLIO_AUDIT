@@ -78,19 +78,34 @@ function getDomainStyle(category: string) {
 }
 
 function BlogCardThumbnail({ blog }: { blog: typeof portfolioConfig.blogs[0] }) {
-  const [imgFailed, setImgFailed] = useState(false);
-  const basePath = process.env.NODE_ENV === "production" ? "/PORTFOLIO_AUDIT" : "";
-  const rawUrl = blog.imageUrl || "/tryhackme_blog_thumbnail.png";
-  const imageSrc = rawUrl.startsWith("http") ? rawUrl : `${basePath}${rawUrl.startsWith("/") ? "" : "/"}${rawUrl}`;
+  const [imgSrc, setImgSrc] = useState<string>(() => {
+    const raw = blog.imageUrl || "tryhackme_blog_thumbnail.png";
+    if (raw.startsWith("http")) return raw;
+    const clean = raw.startsWith("/") ? raw.slice(1) : raw;
+    return `./${clean}`;
+  });
+  const [retryCount, setRetryCount] = useState(0);
+
+  const handleImageError = () => {
+    if (retryCount === 0) {
+      setImgSrc("/PORTFOLIO_AUDIT/tryhackme_blog_thumbnail.png");
+      setRetryCount(1);
+    } else if (retryCount === 1) {
+      setImgSrc("/tryhackme_blog_thumbnail.png");
+      setRetryCount(2);
+    } else {
+      setRetryCount(3);
+    }
+  };
 
   return (
     <div className="lg:col-span-5 relative rounded-xl overflow-hidden shadow-md aspect-[4/3] border border-border-ink/60 bg-[#181816] flex items-center justify-center">
-      {!imgFailed ? (
+      {retryCount < 3 ? (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
-          src={imageSrc}
+          src={imgSrc}
           alt={blog.title}
-          onError={() => setImgFailed(true)}
+          onError={handleImageError}
           className="w-full h-full object-cover object-center"
         />
       ) : (
