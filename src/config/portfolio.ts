@@ -7,15 +7,24 @@ export interface ProjectJourney {
   impact: string;
 }
 
+export interface ArchitectureNode {
+  id: string;
+  label: string;
+  subtext?: string;
+  type?: "input" | "process" | "ai" | "storage" | "output" | "security";
+}
+
 export interface Project {
   id: string;
   title: string;
+  category: string;
   tagline: string;
   skills: string[];
   techStack: string[];
   githubUrl?: string;
   reportUrl?: string;
   features: string[];
+  architectureFlow?: ArchitectureNode[];
   journey: ProjectJourney;
 }
 
@@ -29,10 +38,27 @@ export interface SkillCluster {
 export interface CurrentExperiment {
   id: string;
   title: string;
+  category: string;
   researchQuestion: string;
   progress: string;
   challenges: string;
   futureDirection: string;
+}
+
+export interface BuildLogItem {
+  id: string;
+  title: string;
+  category: "Software" | "AI" | "Security" | "Cloud" | "Research";
+  period: string;
+  description: string;
+  tech: string[];
+  link?: string;
+}
+
+export interface BuildLogYear {
+  year: string;
+  summary: string;
+  items: BuildLogItem[];
 }
 
 export interface Internship {
@@ -49,8 +75,26 @@ export interface Education {
   major: string;
   institution: string;
   duration: string;
+  cgpa: string;
   highlights: string[];
   coursework: string[];
+}
+
+export interface Certification {
+  name: string;
+  issuer: string;
+  score?: string;
+  badge?: string;
+  link: string;
+}
+
+export interface ProofItem {
+  id: string;
+  title: string;
+  category: "Certification" | "Achievement" | "Leadership" | "Academic";
+  detail: string;
+  verificationLink?: string;
+  highlight: string;
 }
 
 export interface FeedbackCard {
@@ -74,6 +118,13 @@ export interface Blog {
   comingSoon?: boolean;
 }
 
+export interface SystemStatus {
+  status: string;
+  focus: string;
+  currentlyBuilding: string;
+  lastUpdated: string;
+}
+
 export interface PortfolioConfig {
   developer: {
     name: string;
@@ -89,20 +140,19 @@ export interface PortfolioConfig {
     codechefUrl: string;
     hackerrankUrl: string;
     specializations: string[];
-    certifications: {
-      name: string;
-      issuer: string;
-      link: string;
-    }[];
+    certifications: Certification[];
     securityTraining: string;
     problemSolving: string;
     objective: string;
   };
+  systemStatus: SystemStatus;
   internship: Internship;
   education: Education;
   projects: Project[];
   skills: SkillCluster[];
   experiments: CurrentExperiment[];
+  buildLog: BuildLogYear[];
+  proof: ProofItem[];
   feedback: FeedbackCard[];
   githubStats: {
     commits: string;
@@ -116,10 +166,10 @@ export interface PortfolioConfig {
 export const portfolioConfig: PortfolioConfig = {
   developer: {
     name: "Chintala Sai Varun",
-    title: "Secure Systems Engineer",
-    subTitle: "Every system leaves traces. Every trace tells a story. My work begins where patterns emerge.",
-    about: "I build secure intelligent systems, AI-powered backend applications, LLM-driven workflows, and security automation platforms. Experienced in Python, Java, Spring Boot, FastAPI, RAG, and cloud architecture.",
-    lovesSolving: "Agentic AI workflows, secure access delegation protocols, and high-throughput backend pipelines.",
+    title: "Computer Science Engineer",
+    subTitle: "Every system leaves traces. Every trace tells a story. A map of the systems I've built, studied, secured, and explored.",
+    about: "I build high-performance backend systems, AI-powered applications, Retrieval-Augmented Generation (RAG) pipelines, secure cloud infrastructure, and security automation platforms. Experienced across Java, Spring Boot, Python, FastAPI, Gemini LLMs, Docker, AWS, and OWASP vulnerability auditing.",
+    lovesSolving: "Agentic AI workflows, secure access delegation protocols, high-throughput backend pipelines, and tamper-evident cryptographic ledgers.",
     email: "saivarun699@gmail.com",
     githubUrl: "https://github.com/2300031984",
     linkedinUrl: "https://www.linkedin.com/in/saivarun1/",
@@ -128,36 +178,47 @@ export const portfolioConfig: PortfolioConfig = {
     codechefUrl: "https://www.codechef.com/users/saivarun_12",
     hackerrankUrl: "https://www.hackerrank.com/profile/h2300031984",
     specializations: [
-      "Backend Engineering",
-      "Cybersecurity",
-      "Cloud Computing",
-      "AI Security"
+      "Software Engineering",
+      "AI & Agentic Systems",
+      "Cybersecurity & AppSec",
+      "Cloud & DevOps"
     ],
     certifications: [
       {
         name: "AWS Certified Cloud Practitioner",
         issuer: "Amazon Web Services",
+        score: "Score: 981 / 1000",
+        badge: "CLF-C02 Verified",
         link: "AWS_Certified_Cloud_Practitioner_certificate.pdf"
       },
       {
         name: "Oracle AI Foundations Associate",
         issuer: "Oracle Corporation",
+        badge: "AI & ML Certified",
         link: "https://education.oracle.com/verification"
       },
       {
         name: "Microsoft Certified: Security Operations Analyst Associate",
         issuer: "Microsoft",
+        badge: "SC-200 Verified",
         link: "Microsoft_Certified_Security_Operations_Analyst_Associate.pdf"
       },
       {
         name: "Smart Coder Certification (Silver)",
         issuer: "Smart Interviews",
+        badge: "400+ Algorithmic Problems",
         link: "https://smartinterviews.in/certificate/2aca3234"
       }
     ],
     securityTraining: "100+ TryHackMe Labs Completed",
     problemSolving: "400+ Algorithmic Challenges Solved",
-    objective: "Building intelligent systems capable of understanding and defending themselves."
+    objective: "Building scalable, intelligent, and tamper-evident systems capable of executing complex workflows securely."
+  },
+  systemStatus: {
+    status: "ONLINE",
+    focus: "SOFTWARE · AI · SECURITY · CLOUD",
+    currentlyBuilding: "AI Threat Intel SOC Platform & HashLens Forensics",
+    lastUpdated: "SEP 2026"
   },
   internship: {
     role: "Java Full Stack Development Intern",
@@ -178,128 +239,20 @@ export const portfolioConfig: PortfolioConfig = {
     major: "Computer Science and Engineering",
     institution: "Koneru Lakshmaiah Education Foundation, Vijayawada",
     duration: "2023 – 2027",
+    cgpa: "9.56 / 10.0",
     highlights: [
       "Maintained an excellent CGPA of 9.56/10.",
-      "Specializing in Secure Software Engineering and Cloud Systems integrations.",
+      "Specializing in Software Engineering, AI Applications, and Cloud Systems integrations.",
       "Active participant in CTFs and security hackathons.",
-      "Maintained a strong analytical focus on data structures, protocols, and networks."
+      "Maintained a strong analytical focus on algorithms, protocols, networks, and system design."
     ],
-    coursework: ["Cryptography", "Computer Networks", "Information Security", "Operating Systems", "Database Management Systems", "Data Structures & Algorithms"]
+    coursework: ["Cryptography", "Computer Networks", "Information Security", "Operating Systems", "Database Management Systems", "Data Structures & Algorithms", "Artificial Intelligence"]
   },
   projects: [
     {
-      id: "secure-ride-sharing",
-      title: "RideSharing",
-      tagline: "Interactive Ride Booking & Management Platform",
-      skills: ["backend-constellation", "cloud-constellation"],
-      techStack: ["JavaScript", "HTML", "CSS", "Browser APIs"],
-      githubUrl: "https://github.com/2300031984/RideSharing",
-      features: [
-        "Designed an interactive web interface matching riders and drivers in real-time.",
-        "Implemented client-side trip routing and fare calculation logic.",
-        "Optimized DOM rendering loops to handle active driver locations smoothly.",
-        "Created secure session states for managing user authentication and active bookings."
-      ],
-      journey: {
-        question: "Can we build a responsive transportation dispatch interface directly in the browser?",
-        learning: "DOM manipulation, asynchronous network requests, and real-time state synchronization.",
-        experiment: "Developed a functional ride-sharing platform simulating dispatch triggers.",
-        challenge: "Handling concurrent driver status updates without lagging the main UI thread.",
-        solution: "Implemented throttling and optimized state updates for active driver maps.",
-        impact: "Delivered a lightweight, highly responsive dispatch mock with instant state reactions."
-      }
-    },
-    {
-      id: "malware-analysis-lab",
-      title: "Malware Analysis Project",
-      tagline: "Static analysis, dynamic behavior, & reverse engineering",
-      skills: ["security-constellation", "forensics-constellation"],
-      techStack: ["Python", "Static Analysis", "Dynamic Behavior", "Reverse Engineering", "PE Headers"],
-      githubUrl: "https://github.com/2300031984/malware-analysis-project",
-      features: [
-        "Explored file headers and PE signatures to identify packer obfuscation and compiler metadata.",
-        "Audited malicious runtime events including memory allocations, process spawns, and file writes.",
-        "Reverse-engineered basic assembly blocks to trace control flow and conditional execution anomalies.",
-        "Documented evasion indicators and compiled signatures to feed defensive detection systems."
-      ],
-      journey: {
-        question: "How can we identify structural indicators of malicious code before execution?",
-        learning: "Assembly instructions, PE file format parsing, and sandbox telemetry logs.",
-        experiment: "Deconstructed dynamic system logs and binary exports from packed file payloads.",
-        challenge: "Isolating evasive packers designed to disable virtual debugger loops.",
-        solution: "Configured kernel-level logging hooks and analyzed memory-injected payloads statically.",
-        impact: "Formulated robust detection signatures identifying packaged threats dynamically."
-      }
-    },
-    {
-      id: "deepfake-detection",
-      title: "DeepFake Detection",
-      tagline: "AI-powered deepfake classification & forensics",
-      skills: ["security-constellation", "forensics-constellation"],
-      techStack: ["Python", "CNNs", "Feature Extraction", "PyTorch", "Digital Forensics"],
-      githubUrl: "https://github.com/2300031984/DeepFake_Detection-",
-      features: [
-        "Engineered automated frame feature extractors processing micro-expression sequences.",
-        "Trained Convolutional Neural Networks (CNNs) to recognize blending borders and frequency artifacts.",
-        "Processed high-resolution video streams to extract facial regions of interest.",
-        "Formulated classification confidence scores to verify authenticity of digital identity media."
-      ],
-      journey: {
-        question: "How can deep learning model patterns detect artificially synthesized facial frames?",
-        learning: "Convolutional Neural Networks, spatial frame analysis, and deepfake generation artifacts.",
-        experiment: "Trained classification architectures on manipulated identity clips.",
-        challenge: "High resolution faces and subtle blending boundaries that escape simple filter sweeps.",
-        solution: "Integrated localized face parsing and trained network layers on pixel-level texture maps.",
-        impact: "Constructed a high-fidelity classification pipeline isolating synthetic modifications."
-      }
-    },
-    {
-      id: "network-traffic-analysis",
-      title: "Network Traffic Analysis using Wireshark",
-      tagline: "Packet captures & incident detection logs",
-      skills: ["forensics-constellation", "cloud-constellation"],
-      techStack: ["Wireshark", "Network Security", "TCP/IP", "DNS SEC", "Packet Capture"],
-      githubUrl: "https://github.com/2300031984/Network-Traffic-Analysis-using-Wireshark",
-      features: [
-        "Logged and parsed raw packet captures (PCAP) to identify unusual handshake sequences.",
-        "Analyzed application layer protocols including DNS query loads and HTTP headers.",
-        "Audited port scans, flood attempts, and abnormal data exchanges.",
-        "Simulated security event streams logging threat patterns for incident response teams."
-      ],
-      journey: {
-        question: "Can we isolate suspicious patterns buried in high-volume raw packet streams?",
-        learning: "Protocol handshake states, packet structures, and Wireshark filter syntax.",
-        experiment: "Captured and parsed network logs from simulated attack vectors.",
-        challenge: "Filtering out background service chatter to isolate malicious beaconing.",
-        solution: "Formulated specific socket query profiles and parsed data streams sequentially.",
-        impact: "Successfully mapped and documented threat payloads and brute-force events."
-      }
-    },
-    {
-      id: "ride-sharing-pentest",
-      title: "RideSharing Pentest",
-      tagline: "Manual security assessment & OWASP WSTG audits",
-      skills: ["security-constellation", "backend-constellation"],
-      techStack: ["Burp Suite", "OWASP WSTG", "JWT Security", "API Security", "Penetration Testing"],
-      reportUrl: "Penetration_Test_Report.pdf",
-      features: [
-        "Conducted a comprehensive manual penetration testing assessment of a self-developed Ride-Sharing Web Application using Burp Suite Community Edition.",
-        "Audited 48 manual security test cases covering Authentication, Authorization, JWT Security, and IDOR.",
-        "Identified Broken Access Control (IDOR), Mass Assignment, Client-Side Fare Manipulation, and Missing Rate Limiting.",
-        "Prepared a professional report mapping vulnerabilities, severities, evidence, remediation, and OWASP mappings."
-      ],
-      journey: {
-        question: "How secure is our Ride-Sharing application against critical business logic and OWASP vulnerabilities?",
-        learning: "OWASP Web Security Testing Guide (WSTG), manual penetration testing tools, and severe access control flaws.",
-        experiment: "Designed 48 manual security test cases using Burp Suite to audit the authentication and API endpoints.",
-        challenge: "Detecting client-side validation bypasses and IDOR parameters in dynamic JWT session states.",
-        solution: "Configured target scopes in Burp Suite, intercepted session tokens, and verified unauthorized modifications.",
-        impact: "Compiled a professional penetration testing report mapping identified vulnerabilities to remediation guides."
-      }
-    },
-    {
       id: "soc-automation-platform",
-      title: "AI Agentic Threat Intelligence & SOC Automation Platform",
+      title: "AI Cybersecurity Threat Intelligence & SOC Automation Platform",
+      category: "AI & Cybersecurity",
       tagline: "Enterprise-grade AI-powered Threat Intelligence & SOC automation platform combining LangChain RAG, SOAR workflows, and agentic vulnerability management.",
       skills: ["backend-constellation", "security-constellation", "cloud-constellation", "programming-constellation", "core-cs-constellation", "ai-constellation"],
       techStack: ["FastAPI", "SQLAlchemy", "PostgreSQL", "n8n SOAR", "LangChain", "Google Gemini", "Docker", "JWT RBAC"],
@@ -311,6 +264,14 @@ export const portfolioConfig: PortfolioConfig = {
         "AI Security Copilot: Built a conversational security assistant (LangChain RAG) translating natural language to safe parameterized SQL SELECT queries.",
         "Threat Feed Integration: Aggregated telemetry feeds (NVD CVE API, CISA KEV, EPSS likelihood index, VirusTotal, AbuseIPDB)."
       ],
+      architectureFlow: [
+        { id: "1", label: "Threat Feeds API", subtext: "NVD CVE / CISA KEV / EPSS Index", type: "input" },
+        { id: "2", label: "n8n SOAR Engine", subtext: "Automated Ingestion Pipelines", type: "process" },
+        { id: "3", label: "LangChain RAG & Gemini", subtext: "Playbooks & Natural-Language SQL", type: "ai" },
+        { id: "4", label: "PostgreSQL DB", subtext: "Row-Level Segregation (RBAC)", type: "storage" },
+        { id: "5", label: "FastAPI Backend", subtext: "Async REST Service & Security Filters", type: "security" },
+        { id: "6", label: "SOC Analyst Dashboard", subtext: "Containment Rules & Telemetry", type: "output" }
+      ],
       journey: {
         question: "How can we orchestrate and automate live threat intelligence ingestion, risk prioritization, and incident response playbooks within a single multi-tenant enterprise system?",
         learning: "Deepened expertise in row-level database segregation, SOAR workflow design, automated API integration (NVD/EPSS/CISA KEV), and RAG networks translating natural language to secure SQL queries.",
@@ -321,30 +282,9 @@ export const portfolioConfig: PortfolioConfig = {
       }
     },
     {
-      id: "ai-resume-analyzer",
-      title: "AI Resume Analyzer",
-      tagline: "AI-powered resume analysis, ATS scoring, and semantic gap matching using RAG.",
-      skills: ["backend-constellation", "programming-constellation", "ai-constellation"],
-      techStack: ["Spring Boot", "Gemini AI", "LangChain", "ChromaDB", "RAG", "REST APIs"],
-      githubUrl: "https://github.com/2300031984/AI-Resume-Analyzer",
-      features: [
-        "Semantic Profiling: Parsed unstructured resume blocks using Gemini LLM and chunked profiles for high-accuracy match rates.",
-        "Retrieval-Augmented Generation: Integrated ChromaDB vector store to compare candidate experience embeddings against specific job requirements.",
-        "ATS Scoring Engine: Formulated scoring logic to analyze keyword relevance, skill gaps, and experience alignment.",
-        "Spring Backend Architecture: Built a scalable Spring Boot REST API layer handling secure document ingestion, search pipelines, and recommendation flows."
-      ],
-      journey: {
-        question: "Can we engineer a high-throughput backend that performs semantic resume parsing and ATS matching without compromising document structure?",
-        learning: "Vector database indexing, Retrieval-Augmented Generation (RAG) chunking strategies, and processing multi-format resume documents.",
-        experiment: "Developed a pipeline integrating Spring Boot with ChromaDB and LangChain to index resume content and compare against target job descriptions.",
-        challenge: "Parsing irregular layouts in PDF resumes and matching unstructured career data to structured skills taxonomies.",
-        solution: "Implemented hierarchical semantic chunking combined with Gemini LLM extraction to map resume text to normalized vector embeddings.",
-        impact: "Built a scalable automated screening system generating detailed ATS reports, semantic gap analyses, and personalized skill recommendations."
-      }
-    },
-    {
       id: "hashlens",
       title: "HASHLENS — File Integrity & Hash Forensics Platform",
+      category: "Digital Forensics & Cybersecurity",
       tagline: "Streaming multi-algorithm hashing, chunk fingerprinting, & tamper-evident chain ledger",
       skills: ["security-constellation", "forensics-constellation", "backend-constellation", "programming-constellation", "core-cs-constellation"],
       techStack: ["Python", "FastAPI", "Streamlit", "SQLite", "PostgreSQL", "Docker", "Cryptography", "REST API", "Pytest"],
@@ -357,6 +297,14 @@ export const portfolioConfig: PortfolioConfig = {
         "Certified Evidence Reports: Deterministic canonical JSON SHA-256 digest calculation (EvidenceService.compute_report_hash()) and independent verification.",
         "REST API & Forensic Dashboard: Production FastAPI backend with interactive OpenAPI / Swagger UI documentation, Streamlit web interface, and native Python CLI."
       ],
+      architectureFlow: [
+        { id: "1", label: "Binary / Text Stream", subtext: "Multi-Gigabyte File Ingestion", type: "input" },
+        { id: "2", label: "Multi-Hasher Engine", subtext: "Concurrent MD5/SHA1/SHA256/SHA512", type: "process" },
+        { id: "3", label: "Chunk Fingerprinter", subtext: "Fixed Block Byte Mapping", type: "process" },
+        { id: "4", label: "7-Tier Forensic Classifier", subtext: "Rule-Driven Diff Diagnostic", type: "security" },
+        { id: "5", label: "Hash Chain Ledger", subtext: "Tamper-Evident Digest Chain", type: "storage" },
+        { id: "6", label: "FastAPI / Streamlit UI", subtext: "Certified Evidence Reports (70/70 Tests)", type: "output" }
+      ],
       journey: {
         question: "Why did my file's hash change, and how can we cryptographically prove file integrity changes without loading multi-gigabyte binaries into memory?",
         learning: "Streaming cryptographic hashing, fixed-size chunk block fingerprinting, linked-list ledger digests (previous_record_hash), and canonical JSON report envelope hashing.",
@@ -365,101 +313,465 @@ export const portfolioConfig: PortfolioConfig = {
         solution: "Implemented fixed-size block mapping for chunk-level diffing alongside a cryptographic linked-list ledger storing previous_record_hash digests with automated chain validation.",
         impact: "Built a production-verified forensic platform with 70/70 passing unit tests, 25/25 live production acceptance tests, 0 known CVEs, and deterministic certified evidence reports."
       }
+    },
+    {
+      id: "ai-resume-analyzer",
+      title: "AI Resume Analyzer",
+      category: "AI & Software Engineering",
+      tagline: "AI-powered resume analysis, ATS scoring, and semantic gap matching using RAG.",
+      skills: ["backend-constellation", "programming-constellation", "ai-constellation"],
+      techStack: ["Spring Boot", "Gemini AI", "LangChain", "ChromaDB", "RAG", "REST APIs"],
+      githubUrl: "https://github.com/2300031984/AI-Resume-Analyzer",
+      features: [
+        "Semantic Profiling: Parsed unstructured resume blocks using Gemini LLM and chunked profiles for high-accuracy match rates.",
+        "Retrieval-Augmented Generation: Integrated ChromaDB vector store to compare candidate experience embeddings against specific job requirements.",
+        "ATS Scoring Engine: Formulated scoring logic to analyze keyword relevance, skill gaps, and experience alignment.",
+        "Spring Backend Architecture: Built a scalable Spring Boot REST API layer handling secure document ingestion, search pipelines, and recommendation flows."
+      ],
+      architectureFlow: [
+        { id: "1", label: "Resume Document", subtext: "PDF / DOCX Ingestion", type: "input" },
+        { id: "2", label: "Gemini Chunking Engine", subtext: "Hierarchical Text Decomposition", type: "process" },
+        { id: "3", label: "ChromaDB Vector Store", subtext: "Dense Embedding Indexes", type: "storage" },
+        { id: "4", label: "LangChain RAG Matcher", subtext: "Semantic Job Matching", type: "ai" },
+        { id: "5", label: "Spring Boot REST API", subtext: "High-Throughput Ingestion Layer", type: "process" },
+        { id: "6", label: "ATS Gap Report", subtext: "Scored Metrics & Recommendations", type: "output" }
+      ],
+      journey: {
+        question: "Can we engineer a high-throughput backend that performs semantic resume parsing and ATS matching without compromising document structure?",
+        learning: "Vector database indexing, Retrieval-Augmented Generation (RAG) chunking strategies, and processing multi-format resume documents.",
+        experiment: "Developed a pipeline integrating Spring Boot with ChromaDB and LangChain to index resume content and compare against target job descriptions.",
+        challenge: "Parsing irregular layouts in PDF resumes and matching unstructured career data to structured skills taxonomies.",
+        solution: "Implemented hierarchical semantic chunking combined with Gemini LLM extraction to map resume text to normalized vector embeddings.",
+        impact: "Built a scalable automated screening system generating detailed ATS reports, semantic gap analyses, and personalized skill recommendations."
+      }
+    },
+    {
+      id: "ride-sharing-pentest",
+      title: "RideSharing Security Audit & Penetration Test",
+      category: "Application Security & Pentesting",
+      tagline: "Manual security assessment & OWASP WSTG vulnerability audit",
+      skills: ["security-constellation", "backend-constellation"],
+      techStack: ["Burp Suite", "OWASP WSTG", "JWT Security", "API Security", "Penetration Testing"],
+      reportUrl: "Penetration_Test_Report.pdf",
+      features: [
+        "Conducted a comprehensive manual penetration testing assessment of a self-developed Ride-Sharing Web Application using Burp Suite Community Edition.",
+        "Audited 48 manual security test cases covering Authentication, Authorization, JWT Security, and IDOR.",
+        "Identified Broken Access Control (IDOR), Mass Assignment, Client-Side Fare Manipulation, and Missing Rate Limiting.",
+        "Prepared a professional report mapping vulnerabilities, severities, evidence, remediation, and OWASP mappings."
+      ],
+      architectureFlow: [
+        { id: "1", label: "Target Application", subtext: "REST Endpoints & JWT Auth", type: "input" },
+        { id: "2", label: "Burp Suite Interceptor", subtext: "Request Modulation & Scope", type: "process" },
+        { id: "3", label: "48 WSTG Test Cases", subtext: "Manual Exploitation Suite", type: "security" },
+        { id: "4", label: "Vulnerability Auditor", subtext: "IDOR, Mass Assignment, Fare Tamper", type: "security" },
+        { id: "5", label: "Remediation Matrix", subtext: "OWASP Alignment & Defense Rules", type: "storage" },
+        { id: "6", label: "Audit Report PDF", subtext: "Verified Vulnerability Dossier", type: "output" }
+      ],
+      journey: {
+        question: "How secure is our Ride-Sharing application against critical business logic and OWASP vulnerabilities?",
+        learning: "OWASP Web Security Testing Guide (WSTG), manual penetration testing tools, and severe access control flaws.",
+        experiment: "Designed 48 manual security test cases using Burp Suite to audit the authentication and API endpoints.",
+        challenge: "Detecting client-side validation bypasses and IDOR parameters in dynamic JWT session states.",
+        solution: "Configured target scopes in Burp Suite, intercepted session tokens, and verified unauthorized modifications.",
+        impact: "Compiled a professional penetration testing report mapping identified vulnerabilities to remediation guides."
+      }
+    },
+    {
+      id: "deepfake-detection",
+      title: "DeepFake Detection",
+      category: "AI & Digital Forensics",
+      tagline: "AI-powered deepfake classification & digital forensics",
+      skills: ["security-constellation", "forensics-constellation", "ai-constellation"],
+      techStack: ["Python", "CNNs", "Feature Extraction", "PyTorch", "Digital Forensics"],
+      githubUrl: "https://github.com/2300031984/DeepFake_Detection-",
+      features: [
+        "Engineered automated frame feature extractors processing micro-expression sequences.",
+        "Trained Convolutional Neural Networks (CNNs) to recognize blending borders and frequency artifacts.",
+        "Processed high-resolution video streams to extract facial regions of interest.",
+        "Formulated classification confidence scores to verify authenticity of digital identity media."
+      ],
+      architectureFlow: [
+        { id: "1", label: "Video Frame Stream", subtext: "Digital Identity Input", type: "input" },
+        { id: "2", label: "Facial ROI Extractor", subtext: "Micro-expression Extraction", type: "process" },
+        { id: "3", label: "Frequency Inspector", subtext: "FFT Spectral Artifact Analysis", type: "security" },
+        { id: "4", label: "PyTorch CNN Model", subtext: "Classification Neural Net", type: "ai" },
+        { id: "5", label: "Authenticity Engine", subtext: "Confidence Score Matrix", type: "output" }
+      ],
+      journey: {
+        question: "How can deep learning model patterns detect artificially synthesized facial frames?",
+        learning: "Convolutional Neural Networks, spatial frame analysis, and deepfake generation artifacts.",
+        experiment: "Trained classification architectures on manipulated identity clips.",
+        challenge: "High resolution faces and subtle blending boundaries that escape simple filter sweeps.",
+        solution: "Integrated localized face parsing and trained network layers on pixel-level texture maps.",
+        impact: "Constructed a high-fidelity classification pipeline isolating synthetic modifications."
+      }
+    },
+    {
+      id: "malware-analysis-lab",
+      title: "Malware Analysis Project",
+      category: "Cybersecurity & Reverse Engineering",
+      tagline: "Static analysis, dynamic behavior, & reverse engineering",
+      skills: ["security-constellation", "forensics-constellation"],
+      techStack: ["Python", "Static Analysis", "Dynamic Behavior", "Reverse Engineering", "PE Headers"],
+      githubUrl: "https://github.com/2300031984/malware-analysis-project",
+      features: [
+        "Explored file headers and PE signatures to identify packer obfuscation and compiler metadata.",
+        "Audited malicious runtime events including memory allocations, process spawns, and file writes.",
+        "Reverse-engineered basic assembly blocks to trace control flow and conditional execution anomalies.",
+        "Documented evasion indicators and compiled signatures to feed defensive detection systems."
+      ],
+      architectureFlow: [
+        { id: "1", label: "Binary File Sample", subtext: "Packed PE Payload", type: "input" },
+        { id: "2", label: "PE Header Parser", subtext: "Section & Import Inspection", type: "process" },
+        { id: "3", label: "Assembly Decompiler", subtext: "x86/x64 Control Flow Audit", type: "security" },
+        { id: "4", label: "Sandbox Telemetry", subtext: "Memory & Syscall Logging", type: "storage" },
+        { id: "5", label: "Threat Signature", subtext: "YARA / Detection Rules", type: "output" }
+      ],
+      journey: {
+        question: "How can we identify structural indicators of malicious code before execution?",
+        learning: "Assembly instructions, PE file format parsing, and sandbox telemetry logs.",
+        experiment: "Deconstructed dynamic system logs and binary exports from packed file payloads.",
+        challenge: "Isolating evasive packers designed to disable virtual debugger loops.",
+        solution: "Configured kernel-level logging hooks and analyzed memory-injected payloads statically.",
+        impact: "Formulated robust detection signatures identifying packaged threats dynamically."
+      }
+    },
+    {
+      id: "network-traffic-analysis",
+      title: "Network Traffic Analysis using Wireshark",
+      category: "Network Security & Incident Response",
+      tagline: "Packet captures & incident detection logs",
+      skills: ["forensics-constellation", "cloud-constellation"],
+      techStack: ["Wireshark", "Network Security", "TCP/IP", "DNS SEC", "Packet Capture"],
+      githubUrl: "https://github.com/2300031984/Network-Traffic-Analysis-using-Wireshark",
+      features: [
+        "Logged and parsed raw packet captures (PCAP) to identify unusual handshake sequences.",
+        "Analyzed application layer protocols including DNS query loads and HTTP headers.",
+        "Audited port scans, flood attempts, and abnormal data exchanges.",
+        "Simulated security event streams logging threat patterns for incident response teams."
+      ],
+      architectureFlow: [
+        { id: "1", label: "Raw PCAP Capture", subtext: "Network Interface Traffic", type: "input" },
+        { id: "2", label: "Wireshark Dissector", subtext: "Protocol & Handshake Analyzer", type: "process" },
+        { id: "3", label: "Anomalous Log Filter", subtext: "Port Scans & Flood Identifiers", type: "security" },
+        { id: "4", label: "Threat Map Report", subtext: "Incident Telemetry Digest", type: "output" }
+      ],
+      journey: {
+        question: "Can we isolate suspicious patterns buried in high-volume raw packet streams?",
+        learning: "Protocol handshake states, packet structures, and Wireshark filter syntax.",
+        experiment: "Captured and parsed network logs from simulated attack vectors.",
+        challenge: "Filtering out background service chatter to isolate malicious beaconing.",
+        solution: "Formulated specific socket query profiles and parsed data streams sequentially.",
+        impact: "Successfully mapped and documented threat payloads and brute-force events."
+      }
+    },
+    {
+      id: "secure-ride-sharing",
+      title: "RideSharing Platform",
+      category: "Web & Software Engineering",
+      tagline: "Interactive Ride Booking & Management Platform",
+      skills: ["backend-constellation", "cloud-constellation"],
+      techStack: ["JavaScript", "HTML", "CSS", "Browser APIs"],
+      githubUrl: "https://github.com/2300031984/RideSharing",
+      features: [
+        "Designed an interactive web interface matching riders and drivers in real-time.",
+        "Implemented client-side trip routing and fare calculation logic.",
+        "Optimized DOM rendering loops to handle active driver locations smoothly.",
+        "Created secure session states for managing user authentication and active bookings."
+      ],
+      architectureFlow: [
+        { id: "1", label: "User / Driver Web UI", subtext: "Interactive Browser Interface", type: "input" },
+        { id: "2", label: "Dispatch State Engine", subtext: "Client-side Route & Fare Logic", type: "process" },
+        { id: "3", label: "Real-time Renderer", subtext: "DOM Throttled Location Loop", type: "output" }
+      ],
+      journey: {
+        question: "Can we build a responsive transportation dispatch interface directly in the browser?",
+        learning: "DOM manipulation, asynchronous network requests, and real-time state synchronization.",
+        experiment: "Developed a functional ride-sharing platform simulating dispatch triggers.",
+        challenge: "Handling concurrent driver status updates without lagging the main UI thread.",
+        solution: "Implemented throttling and optimized state updates for active driver maps.",
+        impact: "Delivered a lightweight, highly responsive dispatch mock with instant state reactions."
+      }
     }
   ],
   skills: [
     {
       id: "backend-constellation",
-      title: "Backend Engineering",
-      items: ["Java", "Spring Boot", "FastAPI", "REST APIs", "JWT Authentication", "Spring Security", "MySQL", "PostgreSQL", "Hibernate ORM", "Microservices"],
+      title: "Software Engineering & Backend",
+      items: ["Java", "Spring Boot", "FastAPI", "Python", "REST APIs", "JWT Auth", "Spring Security", "MySQL", "PostgreSQL", "Hibernate ORM", "Microservices"],
       relatedProjects: ["secure-ride-sharing", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer", "hashlens"]
     },
     {
+      id: "ai-constellation",
+      title: "AI, LLMs & Agentic Systems",
+      items: ["Google Gemini API", "Large Language Models (LLMs)", "LangChain", "Retrieval-Augmented Generation (RAG)", "Prompt Engineering", "ChromaDB Vector DB", "n8n Workflow Automation"],
+      relatedProjects: ["soc-automation-platform", "ai-resume-analyzer", "deepfake-detection"]
+    },
+    {
       id: "security-constellation",
-      title: "Application Security & Cybersecurity",
-      items: ["OWASP Top 10", "OWASP WSTG", "Penetration Testing", "API Security", "Threat Hunting", "Incident Response", "Vulnerability Assessment", "Secure Coding", "Secure SDLC", "Authentication & Authorization", "Malware Analysis", "Digital Forensics"],
+      title: "Cybersecurity & AppSec",
+      items: ["OWASP Top 10", "OWASP WSTG", "Penetration Testing", "API Security", "Threat Hunting", "Incident Response", "Vulnerability Assessment", "Secure Coding", "Malware Analysis", "Digital Forensics"],
       relatedProjects: ["malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform", "hashlens"]
     },
     {
       id: "cloud-constellation",
       title: "Cloud & DevOps",
-      items: ["AWS (EC2, S3, IAM, RDS)", "Docker", "Kubernetes (basics)", "Linux", "Git", "GitHub Actions", "CI/CD Pipelines", "Deployment Automation"],
+      items: ["AWS (EC2, S3, IAM, RDS)", "Docker Containers", "Kubernetes (basics)", "Linux Administration", "Git", "GitHub Actions", "CI/CD Pipelines", "Deployment Automation"],
       relatedProjects: ["secure-ride-sharing", "network-traffic-analysis", "soc-automation-platform", "ai-resume-analyzer", "hashlens"]
     },
     {
       id: "programming-constellation",
-      title: "Programming",
+      title: "Languages & Scripts",
       items: ["Java", "Python", "SQL", "C", "Bash scripting", "Competitive Programming"],
       relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "deepfake-detection", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer", "hashlens"]
     },
     {
       id: "core-cs-constellation",
-      title: "Core Computer Science",
-      items: ["Data Structures & Algorithms", "DBMS", "Operating Systems", "Computer Networks", "System Design"],
+      title: "Core CS & Algorithms",
+      items: ["Data Structures & Algorithms", "DBMS", "Operating Systems", "Computer Networks", "System Design", "400+ Algorithmic Problems Solved"],
       relatedProjects: ["secure-ride-sharing", "malware-analysis-lab", "network-traffic-analysis", "ride-sharing-pentest", "soc-automation-platform", "ai-resume-analyzer", "hashlens"]
+    }
+  ],
+  buildLog: [
+    {
+      year: "2026",
+      summary: "Advanced AI Agentic Systems, Cryptographic Forensic Ledgers & Enterprise Security Automation",
+      items: [
+        {
+          id: "log-2026-1",
+          title: "AI Threat Intelligence & SOC Automation Platform",
+          category: "AI",
+          period: "Jan 2026 – Present",
+          description: "Engineered multi-tenant SOC automation platform integrating FastAPI, Google Gemini RAG, n8n SOAR workflows, and PostgreSQL row-level security.",
+          tech: ["FastAPI", "PostgreSQL", "LangChain", "Gemini AI", "n8n", "Docker"],
+          link: "https://github.com/2300031984/AI-Cybersecurity-SOC-Automation-Platform"
+        },
+        {
+          id: "log-2026-2",
+          title: "HASHLENS Forensic Integrity Engine",
+          category: "Security",
+          period: "Aug 2026 – Sep 2026",
+          description: "Built local-first streaming cryptographic hash calculator, chunk fingerprinting engine, and tamper-evident append-only ledger with 70/70 unit tests.",
+          tech: ["Python", "FastAPI", "Streamlit", "SQLite", "Cryptography", "Docker"],
+          link: "https://github.com/2300031984/HASHLENS"
+        },
+        {
+          id: "log-2026-3",
+          title: "AI Resume Analyzer & Semantic RAG System",
+          category: "AI",
+          period: "Feb 2026 – May 2026",
+          description: "Designed Spring Boot REST API backed by ChromaDB vector store and Gemini LLM for ATS semantic job match scoring.",
+          tech: ["Spring Boot", "ChromaDB", "LangChain", "Gemini API", "REST APIs"],
+          link: "https://github.com/2300031984/AI-Resume-Analyzer"
+        },
+        {
+          id: "log-2026-4",
+          title: "TryHackMe Security Research Publication",
+          category: "Security",
+          period: "August 2026",
+          description: "Published technical article detailing key lessons from completing 100+ hands-on TryHackMe security labs across SOC, AppSec, and networking.",
+          tech: ["TryHackMe", "OWASP", "SOC", "Network Analysis"],
+          link: "https://www.linkedin.com/pulse/what-100-tryhackme-labs-taught-me-cybersecurity-chintala-sai-varun-u2hcf/"
+        }
+      ]
     },
     {
-      id: "ai-constellation",
-      title: "AI, LLMs & Agentic Systems",
-      items: ["Gemini API", "Large Language Models (LLMs)", "LangChain", "Retrieval-Augmented Generation (RAG)", "Prompt Engineering", "ChromaDB", "n8n Workflow Automation"],
-      relatedProjects: ["soc-automation-platform", "ai-resume-analyzer", "deepfake-detection"]
+      year: "2025",
+      summary: "Full Stack Java Backend Engineering, Security Audits, Network Packet Forensics & TryHackMe",
+      items: [
+        {
+          id: "log-2025-1",
+          title: "Java Full Stack Development Internship",
+          category: "Software",
+          period: "April 2025 – June 2025",
+          description: "Developed enterprise Spring Boot backends, implemented JWT authentication, designed MySQL schemas, and built secure REST APIs at EduSkills.",
+          tech: ["Java", "Spring Boot", "Spring Security", "JWT", "MySQL", "Hibernate"]
+        },
+        {
+          id: "log-2025-2",
+          title: "RideSharing Application Penetration Test Audit",
+          category: "Security",
+          period: "July 2025 – Sep 2025",
+          description: "Executed 48 manual security test cases using Burp Suite following OWASP WSTG, uncovering IDOR and fare manipulation flaws.",
+          tech: ["Burp Suite", "OWASP WSTG", "JWT Security", "API Security"]
+        },
+        {
+          id: "log-2025-3",
+          title: "Network Traffic Analysis & Packet Dissection",
+          category: "Security",
+          period: "Aug 2025 – Nov 2025",
+          description: "Parsed raw PCAP streams with Wireshark to investigate TCP handshakes, DNS anomalies, and simulated flood attack vectors.",
+          tech: ["Wireshark", "TCP/IP", "DNSSEC", "PCAP Analysis"],
+          link: "https://github.com/2300031984/Network-Traffic-Analysis-using-Wireshark"
+        },
+        {
+          id: "log-2025-4",
+          title: "100+ TryHackMe Labs Completion",
+          category: "Security",
+          period: "2025 – 2026",
+          description: "Completed over 100 offensive and defensive labs covering web application security, Linux privilege escalation, network auditing, and Active Directory.",
+          tech: ["TryHackMe", "Linux", "Nmap", "Wireshark", "Metasploit"]
+        },
+        {
+          id: "log-2025-5",
+          title: "DeepFake AI Detection & Forensics Framework",
+          category: "AI",
+          period: "Sep 2025 – Dec 2025",
+          description: "Trained PyTorch CNN models on facial micro-expressions and spatial frame boundary artifacts to classify synthetic media.",
+          tech: ["Python", "PyTorch", "CNNs", "OpenCV", "Forensics"],
+          link: "https://github.com/2300031984/DeepFake_Detection-"
+        },
+        {
+          id: "log-2025-6",
+          title: "Malware Static Analysis & PE Structure Lab",
+          category: "Security",
+          period: "June 2025 – Oct 2025",
+          description: "Analyzed PE headers, obfuscated packers, dynamic sandbox telemetry, and decompiled assembly control flow.",
+          tech: ["Python", "PEfile", "Assembly x86", "Sandbox Telemetry"],
+          link: "https://github.com/2300031984/malware-analysis-project"
+        }
+      ]
+    },
+    {
+      year: "2024",
+      summary: "Data Structures, Algorithmic Problem Solving (2023 – 2026) & Computer Science Foundations",
+      items: [
+        {
+          id: "log-2024-1",
+          title: "400+ Algorithmic Problem Solving Mastery",
+          category: "Software",
+          period: "2023 – 2026",
+          description: "Earned Smart Coder Silver certification by solving 400+ data structure and algorithm challenges across LeetCode, CodeChef, and HackerRank.",
+          tech: ["Java", "Python", "Data Structures", "Algorithms"]
+        }
+      ]
     }
   ],
   experiments: [
     {
       id: "ai-agents",
-      title: "AI Agents",
-      researchQuestion: "Can multi-agent swarms automate dynamic security incident isolation?",
-      progress: "Prototyped a localized router agent selecting sub-agents for log analysis.",
-      challenges: "Ensuring zero prompt injection drift in command executions.",
+      title: "AI Agents & Autonomous Workflows",
+      category: "AI / ML",
+      researchQuestion: "Can multi-agent swarms automate dynamic security incident isolation without prompt injection risks?",
+      progress: "Prototyped localized router agent selecting specialized sub-agents for log analysis and playbooks.",
+      challenges: "Ensuring zero prompt injection drift in tool command executions.",
       futureDirection: "Integrating local WebGPU LLMs for isolated agent decision clusters."
     },
     {
       id: "rag-systems",
-      title: "RAG Systems",
-      researchQuestion: "Can RAG networks extract contextual CVE vulnerabilities without query leak?",
-      progress: "Indexed historical vulnerability databases inside local vectors.",
-      challenges: "Minimizing retrieval latency and context pollution.",
-      futureDirection: "Integrating dense embeddings with semantic search filters."
+      title: "Contextual RAG & Vector Search",
+      category: "AI / ML",
+      researchQuestion: "Can RAG networks extract contextual CVE vulnerabilities accurately without cross-tenant data leak?",
+      progress: "Indexed historical vulnerability databases inside local ChromaDB vector collections.",
+      challenges: "Minimizing retrieval latency and context window pollution.",
+      futureDirection: "Integrating dense hybrid embeddings with semantic SQL query filters."
+    },
+    {
+      id: "api-security-labs",
+      title: "API Security & Access Delegation",
+      category: "Cybersecurity",
+      researchQuestion: "How can we enforce fine-grained access control on REST APIs while maintaining zero-trust session validation?",
+      progress: "Built custom JWT claims verification and rate limiting interceptors in Spring Security & FastAPI.",
+      challenges: "Handling token invalidation across distributed microservice nodes.",
+      futureDirection: "Implementing OAuth2 / OIDC state validation with distributed Redis caches."
     },
     {
       id: "cloud-security",
-      title: "Cloud Security",
-      researchQuestion: "Can serverless functions automate identity credential audits dynamically?",
-      progress: "Deployed auditing lambda scripts reacting to IAM permission modifications.",
-      challenges: "Policy complexity in cross-account cloud environments.",
-      futureDirection: "Synthesizing automated path validation for policy validation."
+      title: "Cloud Security & Serverless Audits",
+      category: "Cloud / DevOps",
+      researchQuestion: "Can serverless functions automate identity credential audits dynamically upon policy changes?",
+      progress: "Deployed auditing AWS Lambda scripts reacting to IAM permission modifications.",
+      challenges: "Managing policy complexity in cross-account AWS cloud environments.",
+      futureDirection: "Synthesizing automated policy validation using AWS CloudTrail & EventBridge."
     },
     {
       id: "threat-intel-automation",
-      title: "Threat Intelligence Automation",
-      researchQuestion: "Can we synthesize live honeypot anomaly patterns automatically?",
-      progress: "Configuring automated SSH monitors capturing malicious inputs.",
+      title: "Threat Intelligence Honeypots",
+      category: "Cybersecurity",
+      researchQuestion: "Can we synthesize live honeypot anomaly patterns automatically into firewall rules?",
+      progress: "Configuring automated SSH monitors capturing malicious login inputs.",
       challenges: "Distinguishing coordinated scans from individual script attempts.",
       futureDirection: "Compiling behavior maps dynamically to feed active firewall rules."
     },
     {
       id: "advanced-system-design",
-      title: "Advanced System Design",
-      researchQuestion: "How do we design stateful backends that auto-recover from system partitions?",
-      progress: "Simulating multi-node consensus algorithms over virtual connections.",
-      challenges: "Mitigating split-brain latency states on slow networks.",
-      futureDirection: "Deploying raft consensus layers directly inside edge nodes."
+      title: "Stateful System Design & Hash Ledgers",
+      category: "Software Engineering",
+      researchQuestion: "How do we design stateful backends that maintain tamper-evident integrity under high concurrency?",
+      progress: "Implemented cryptographic linked-list ledgers storing previous_record_hash digests in HashLens.",
+      challenges: "Mitigating write lock contention during rapid sequential audit logging.",
+      futureDirection: "Deploying Raft consensus layers directly inside edge node ledgers."
+    }
+  ],
+  proof: [
+    {
+      id: "proof-aws",
+      title: "AWS Certified Cloud Practitioner",
+      category: "Certification",
+      detail: "Amazon Web Services (CLF-C02) — Achieved high score of 981 / 1000.",
+      verificationLink: "AWS_Certified_Cloud_Practitioner_certificate.pdf",
+      highlight: "Score: 981 / 1000"
     },
     {
-      id: "security-monitoring",
-      title: "Security Monitoring Platforms",
-      researchQuestion: "Can we build an open telemetry hub mapping packet streams in micro-services?",
-      progress: "Routing Docker log streams to a unified console visualization.",
-      challenges: "Parsing disparate log layouts from dynamic container systems.",
-      futureDirection: "Developing customizable parsers for structured cloud registries."
+      id: "proof-oracle",
+      title: "Oracle AI Foundations Associate",
+      category: "Certification",
+      detail: "Oracle Corporation — Certified in Machine Learning, AI algorithms, and neural networks.",
+      verificationLink: "https://education.oracle.com/verification",
+      highlight: "AI & ML Verified"
+    },
+    {
+      id: "proof-ms",
+      title: "Microsoft Certified: Security Operations Analyst Associate",
+      category: "Certification",
+      detail: "Microsoft (SC-200) — Certified in incident response, threat hunting, and Defender/Sentinel.",
+      verificationLink: "Microsoft_Certified_Security_Operations_Analyst_Associate.pdf",
+      highlight: "SC-200 Certified"
+    },
+    {
+      id: "proof-smart-coder",
+      title: "Smart Coder Certification (Silver)",
+      category: "Certification",
+      detail: "Smart Interviews — Verified mastery of Data Structures, Algorithms & System Design.",
+      verificationLink: "https://smartinterviews.in/certificate/2aca3234",
+      highlight: "400+ Algorithmic Problems"
+    },
+    {
+      id: "proof-thm",
+      title: "100+ TryHackMe Security Labs",
+      category: "Achievement",
+      detail: "Completed 100+ practical labs covering Web AppSec, SOC operations, malware analysis, and network auditing.",
+      verificationLink: "https://tryhackme.com/p/SaiVarun",
+      highlight: "100+ Practical Labs"
+    },
+    {
+      id: "proof-cgpa",
+      title: "Academic Excellence — 9.56 / 10.0 CGPA",
+      category: "Academic",
+      detail: "Koneru Lakshmaiah Education Foundation — B.Tech Computer Science and Engineering (2023-2027).",
+      highlight: "CGPA 9.56 / 10.0"
+    },
+    {
+      id: "proof-leadership",
+      title: "Technical Team Lead",
+      category: "Leadership",
+      detail: "KL Student Activity Center — Leading technical workshops, hackathons, and software engineering projects.",
+      highlight: "Student Team Lead"
+    },
+    {
+      id: "proof-github",
+      title: "169+ GitHub Contributions",
+      category: "Achievement",
+      detail: "Maintained active open-source contribution record across 19 public repositories.",
+      verificationLink: "https://github.com/2300031984",
+      highlight: "19 Repositories"
     }
   ],
   feedback: [
     {
       name: "Prof. K. Raghava",
       role: "Department of Computer Science Engineering",
-      comment: "Sai Varun shows outstanding analytical aptitude. His focus on AI security paradigms and protocol audits reflects real academic depth."
+      comment: "Sai Varun shows outstanding analytical aptitude. His focus on AI security paradigms, protocol audits, and system architecture reflects real academic depth."
     },
     {
       name: "S. Srinivasan",
