@@ -70,9 +70,9 @@ function getDomainStyle(category: string) {
   return {
     text: "text-accent",
     border: "border-accent/30",
-    bg: "bg-[#181816]/80",
-    badge: "border border-accent/30 text-accent bg-[#181816]/80 backdrop-blur-sm",
-    glow: "hover:border-accent/50 hover:bg-[#1C1C19] transition-all",
+    bg: "bg-paper-node/80",
+    badge: "border border-accent/30 text-accent bg-accent/10 backdrop-blur-sm",
+    glow: "hover:border-accent/60 hover:bg-paper-node transition-all",
     domainName
   };
 }
@@ -849,14 +849,14 @@ export default function Page() {
           </div>
 
           {/* Main Headline Name (Prominent Single-Line / Responsive Layout) */}
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] text-center select-none">
+          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-7xl font-bold tracking-tight text-ink leading-[1.1] text-center select-none">
             Chintala Sai Varun
           </h1>
 
           {/* Specialization Badges Row */}
           <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
             {portfolioConfig.developer.specializations.map((spec, idx) => (
-              <span key={idx} className="text-xs font-mono px-3 py-1.5 rounded-md border border-accent/30 bg-[#181816]/80 text-accent font-semibold shadow-sm backdrop-blur-sm">
+              <span key={idx} className="text-xs font-mono px-3 py-1.5 rounded-md border border-accent/30 bg-paper-node/90 text-accent font-semibold shadow-sm backdrop-blur-sm">
                 {spec}
               </span>
             ))}
@@ -864,7 +864,7 @@ export default function Page() {
 
           {/* Quote Container */}
           <div className="p-4 rounded-xl border border-border-ink/60 bg-paper-node/40 backdrop-blur-md shadow-sm max-w-xl mx-auto space-y-1 text-center">
-            <p className="font-serif italic text-base md:text-lg text-white font-semibold">
+            <p className="font-serif italic text-base md:text-lg text-ink font-semibold">
               &quot;Every system leaves traces. Every trace tells a story.&quot;
             </p>
             <p className="font-serif italic text-xs md:text-sm text-ink-muted">
@@ -896,14 +896,14 @@ export default function Page() {
           <div className="flex flex-wrap justify-center items-center gap-3 pt-1">
             <button
               onClick={() => document.getElementById("map-section")?.scrollIntoView({ behavior: "smooth" })}
-              className="px-6 py-2.5 rounded-full bg-white text-black font-sans font-semibold text-xs transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer hover:bg-white/90"
+              className="px-6 py-2.5 rounded-full bg-ink text-paper hover:bg-accent hover:text-white font-sans font-semibold text-xs transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer"
             >
               Explore Interactive Mind Map
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => document.getElementById("projects-section")?.scrollIntoView({ behavior: "smooth" })}
-              className="px-6 py-2.5 rounded-full border border-border-ink bg-paper-node/80 hover:border-accent text-white font-sans text-xs font-semibold transition-all duration-300 cursor-pointer"
+              className="px-6 py-2.5 rounded-full border border-border-ink bg-paper-node/80 hover:border-accent hover:text-accent text-ink font-sans text-xs font-semibold transition-all duration-300 cursor-pointer"
             >
               View Projects &amp; Architecture
             </button>
@@ -954,12 +954,12 @@ export default function Page() {
               SECTION 02 // SUBJECT PROFILE
             </span>
 
-            <h2 className="font-serif text-2xl md:text-[32px] font-bold text-white leading-[1.15]">
+            <h2 className="font-serif text-2xl md:text-[32px] font-bold text-ink leading-[1.15]">
               Patterns reveal the<br />system.
             </h2>
 
             <div className="space-y-2.5 font-sans text-[12px] text-ink-muted leading-relaxed">
-              <p className="text-white font-medium">
+              <p className="text-ink font-medium">
                 I am a Computer Science undergraduate focused on building secure, scalable, and intelligent software systems.
               </p>
 
@@ -992,7 +992,7 @@ export default function Page() {
                 <div className="relative space-y-0.5">
                   <span className="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-accent ring-4 ring-paper-node" />
                   <span className="text-[10px] font-mono font-bold text-accent">2023</span>
-                  <h3 className="font-serif text-xs md:text-sm font-bold text-white leading-tight">Engineering Foundations</h3>
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-ink leading-tight">Engineering Foundations</h3>
                   <p className="font-sans text-[11px] text-ink-muted leading-relaxed">
                     Started Computer Science Engineering with a focus on programming, algorithms, databases, operating systems, and computer networks.
                   </p>
@@ -1001,7 +1001,7 @@ export default function Page() {
                 <div className="relative space-y-0.5">
                   <span className="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-accent ring-4 ring-paper-node" />
                   <span className="text-[10px] font-mono font-bold text-accent">2024</span>
-                  <h3 className="font-serif text-xs md:text-sm font-bold text-white leading-tight">Backend Engineering Internship</h3>
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-ink leading-tight">Backend Engineering Internship</h3>
                   <p className="font-sans text-[11px] text-ink-muted leading-relaxed">
                     Developed Spring Boot applications, designed REST APIs, implemented JWT authentication, optimized databases, and worked on secure backend systems during my Full Stack Development.
                   </p>
@@ -1010,7 +1010,7 @@ export default function Page() {
                 <div className="relative space-y-0.5">
                   <span className="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-accent ring-4 ring-paper-node" />
                   <span className="text-[10px] font-mono font-bold text-accent">2025</span>
-                  <h3 className="font-serif text-xs md:text-sm font-bold text-white leading-tight">Security Exploration &amp; Problem Solving</h3>
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-ink leading-tight">Security Exploration &amp; Problem Solving</h3>
                   <p className="font-sans text-[11px] text-ink-muted leading-relaxed">
                     Completed 100+ TryHackMe labs, strengthened cybersecurity fundamentals, and solved 400+ algorithmic problems across coding platforms.
                   </p>
@@ -1019,7 +1019,7 @@ export default function Page() {
                 <div className="relative space-y-0.5">
                   <span className="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-accent ring-4 ring-paper-node animate-pulse" />
                   <span className="text-[10px] font-mono font-bold text-accent">2026</span>
-                  <h3 className="font-serif text-xs md:text-sm font-bold text-white leading-tight">Intelligent Secure Systems</h3>
+                  <h3 className="font-serif text-xs md:text-sm font-bold text-ink leading-tight">Intelligent Secure Systems</h3>
                   <p className="font-sans text-[11px] text-ink-muted leading-relaxed">
                     Exploring AI-powered security, threat detection, intelligent monitoring platforms to build secure and adaptive software systems.
                   </p>
@@ -1229,13 +1229,13 @@ export default function Page() {
               <div key={exp.id} className="p-4 rounded-xl border border-border-ink/70 bg-paper-node/40 backdrop-blur-sm space-y-2.5 shadow-sm hover:border-accent/40 transition-all duration-300 flex flex-col justify-between h-full">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-mono tracking-wider uppercase font-bold text-accent px-2 py-0.5 rounded border border-accent/30 bg-[#181816]/80">
+                    <span className="text-[9px] font-mono tracking-wider uppercase font-bold text-accent px-2 py-0.5 rounded border border-accent/30 bg-accent/10">
                       {exp.category}
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                   </div>
 
-                  <h3 className="font-serif text-sm font-bold text-white leading-snug">
+                  <h3 className="font-serif text-sm font-bold text-ink leading-snug">
                     {exp.title}
                   </h3>
                 </div>
@@ -1498,7 +1498,7 @@ export default function Page() {
                   </span>
                 </div>
 
-                <h3 className="font-serif text-2xl md:text-3xl font-bold text-white leading-tight">
+                <h3 className="font-serif text-2xl md:text-3xl font-bold text-ink leading-tight">
                   {blog.title}
                 </h3>
 
@@ -1510,7 +1510,7 @@ export default function Page() {
                 {blog.topics && (
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {blog.topics.map((t, idx) => (
-                      <span key={idx} className="text-[10px] font-mono px-2.5 py-0.5 rounded border border-accent/30 bg-[#181816]/80 text-ink font-medium">
+                      <span key={idx} className="text-[10px] font-mono px-2.5 py-0.5 rounded border border-accent/30 bg-paper-node text-ink font-medium">
                         {t}
                       </span>
                     ))}
@@ -1523,7 +1523,7 @@ export default function Page() {
                     href={blog.readUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-full bg-white text-black font-sans font-semibold text-xs transition-all duration-300 hover:bg-white/90 shadow-md inline-flex items-center gap-2 cursor-pointer"
+                    className="px-5 py-2.5 rounded-full bg-ink text-paper hover:bg-accent hover:text-white font-sans font-semibold text-xs transition-all duration-300 shadow-md inline-flex items-center gap-2 cursor-pointer"
                   >
                     <BookOpen className="w-4 h-4" />
                     Read Article

@@ -42,7 +42,7 @@ export default function ProjectDetailDrawer({ project, onClose }: ProjectDetailD
       case "storage":
       case "security":
       case "output":
-        return "border border-accent/30 bg-[#181816]/80 text-accent";
+        return "border border-accent/30 bg-accent/10 text-accent font-medium";
       default:
         return "border-border-ink bg-paper-node text-ink";
     }
@@ -97,7 +97,7 @@ export default function ProjectDetailDrawer({ project, onClose }: ProjectDetailD
             {/* Title & Meta */}
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="text-xs font-mono px-3 py-1 rounded-full border border-accent/30 bg-[#181816]/80 text-accent font-bold">
+                <span className="text-xs font-mono px-3 py-1 rounded-full border border-accent/30 bg-accent/10 text-accent font-bold">
                   {project.category}
                 </span>
                 {project.githubUrl && (
@@ -116,7 +116,7 @@ export default function ProjectDetailDrawer({ project, onClose }: ProjectDetailD
                     href={project.reportUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1 rounded-full border border-accent/30 bg-[#181816]/80 text-accent hover:border-accent/50 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1 rounded-full border border-accent/30 bg-accent/10 text-accent hover:border-accent/50 transition-colors"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     Audit Report PDF
